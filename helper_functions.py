@@ -207,6 +207,28 @@ def calculate_game_number(df, sort_column):
 
 	return df
 
+# calculates season game number 
+def calculate_season_game_number(df, sort_column):
+	# make sure we are ordered by team and data
+	df = sort_and_reindex(df, [sort_column,'Date'])
+
+	# find gap between games so we can recognize the large gap between seasons
+	# as well as the 'negative gap' when we move from one team to another
+	time_gap = df.NumericDate - df['NumericDate'].shift(1)
+
+	# find the indexes of DataFrame that are at the borders of seasons and 
+	# switches to other teams
+	season_list = (df[pd.isnull(time_gap) | (time_gap < 0) | (time_gap > 30)].index).tolist()
+	season_list.append(len(df.index))
+
+	# find the distances between the critical indexes to find the lengths of each season
+	season_length_list = [t - s for s, t in zip(season_list, season_list[1:])]
+
+	# add Season Game Number to DataFrame
+	df['SeasonGameNumber'] = list(itertools.chain.from_iterable([xrange(1,x+1) for x in season_length_list]))
+
+	return df
+
 # Calculate possessions estimate for a single game
 def calc_possessions(team_data, index):
 	possessions = 0.5 * ((float(team_data.loc[index,"TeamFGA"]) + 0.44 * \
