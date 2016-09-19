@@ -12,7 +12,7 @@ import get_averages as ga
 import variance_functions as vf
 
 # SMALL TEST DF
-df = pd.DataFrame(data = [['Stephen Curry',1,30,10,'GSW','2011-01-01',0.1],
+df = pd.DataFrame(data = [['Stephen Curry',1,30,10,'SAC','2011-01-01',0.1],
 						  ['Stephen Curry',2,25,0,'GSW','2011-01-01',0.2],
 						  ['Stephen Curry',3,32,6.2,'GSW','2011-01-01',0.15],
 						  ['Stephen Curry',4,31,9,'GSW','2011-01-01',0.12],
@@ -25,9 +25,10 @@ df = pd.DataFrame(data = [['Stephen Curry',1,30,10,'GSW','2011-01-01',0.1],
 				  columns = ['Player','PlayerGameNumber','PTS','AST','Team','Date','Usg'])
 
 
-df['AA'] = (df['PTS'] < 25).astype(int)
+df = hf.calculate_team_change(df, 'Player')
 
 print df
+
 
 ###########################################################################
 # CODE SNIPPETS
@@ -49,5 +50,11 @@ if 'AST' in df.columns:
 grouped = df.groupby(['Team','Date'])
 for i in grouped:
 	print i[1]
+'''
+
+# ADD SHIFTED COLUMN
+# example shifts by 1
+'''
+df['ShiftedColumn'] = df['ColumnToShift'].shift(1)
 '''
 ###########################################################################

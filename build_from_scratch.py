@@ -8,7 +8,8 @@ import build_final_dataset as bfd
 import add_minutes_estimation as ame
 import time
 
-def build_from_scratch(player_data_file_name, team_data_file_name, only_final_dataset):
+def build_from_scratch(player_data_file_name, team_data_file_name, only_final_dataset,
+					   only_offensive_load):
 	# LOAD FILES:
 	print "STARTED BUILD FROM SCRATCH"
 	t0 = time.time()
@@ -19,7 +20,7 @@ def build_from_scratch(player_data_file_name, team_data_file_name, only_final_da
 	if not only_final_dataset:
 		player_data = pd.read_csv(player_data_file_name)
 		team_data = pd.read_csv(team_data_file_name)
-		t1 = hf.time_checkpoint(t0, t0, "READ IN PLAYER AND TEAM DATA")
+		tp = hf.time_checkpoint(t0, tp, "READ IN PLAYER AND TEAM DATA")
 
 
 		# UPKEEP:
@@ -37,14 +38,14 @@ def build_from_scratch(player_data_file_name, team_data_file_name, only_final_da
 
 		# BUILD DATASETS:
 		player_data = fpd.format_player_data(player_data, 1)
-		t2 = hf.time_checkpoint(t0, t1, "BUILT PLAYER DATA")
+		tp = hf.time_checkpoint(t0, tp, "BUILT PLAYER DATA")
 		player_data.to_csv('DataSets/FormattedData/formatted_player_data.csv', index = False)
-		t3 = hf.time_checkpoint(t0, t2, "WROTE PLAYER DATA TO MEMORY")
+		tp = hf.time_checkpoint(t0, tp, "WROTE PLAYER DATA TO MEMORY")
 		
 		team_data = ftd.format_team_data(team_data, 1)
-		t4 = hf.time_checkpoint(t0, t3, "BUILT TEAM DATA")
+		tp = hf.time_checkpoint(t0, tp, "BUILT TEAM DATA")
 		team_data.to_csv('DataSets/FormattedData/formatted_team_data.csv', index = False)
-		t5 = hf.time_checkpoint(t0, t4, "WROTE TEAM DATA TO MEMORY")
+		tp = hf.time_checkpoint(t0, tp, "WROTE TEAM DATA TO MEMORY")
 		# NA CHECK:
 		# sanity check
 		hf.check_na(player_data, 'format_player_data')
@@ -55,7 +56,7 @@ def build_from_scratch(player_data_file_name, team_data_file_name, only_final_da
 
 	# BUILD FINAL DATASET:
 	full_dataset = pd.DataFrame()
-	final_dataset = bfd.build_final_dataset(player_data, team_data, full_dataset, 1)
+	final_dataset = bfd.build_final_dataset(player_data, team_data, full_dataset, 1, 1)
 
 	# dump to csv in case something fucks up in 'add_minute_estimation'
 	final_dataset.to_csv('DataSets/FormattedData/formatted_final_data.csv')
@@ -79,8 +80,10 @@ def build_from_scratch(player_data_file_name, team_data_file_name, only_final_da
 	for i in final_dataset.columns:
 		print "\"" + i + "\","
 
-player_data = 'DataSets/ScrapedData/raw_player_data_removed_incomplete_starters.csv'
-team_data = 'DataSets/ScrapedData/raw_team_data.csv'
+if __name__ == "__main__":
+	# files
+	player_data = 'DataSets/ScrapedData/raw_player_data_removed_incomplete_starters.csv'
+	team_data = 'DataSets/ScrapedData/raw_team_data.csv'
 
-# (player_data_file_name, team_data_file_name, only_final_dataset)
-build_from_scratch(player_data, team_data, 0)
+	# (player_data_file_name, team_data_file_name, only_final_dataset, only_offensive_load)
+	build_from_scratch(player_data, team_data, 1, 1)

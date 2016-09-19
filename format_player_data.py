@@ -32,6 +32,7 @@ def format_player_data(player_data, first_time):
 	n = len(player_data.index)
 	day_list = [1,2,3,5,10,20,30,40,50]
 	t0 = time.time()
+	tp = t0
 	hf.error_checking(player_data, "START OF FORMATTING PLAYER DATA", 0)
 
 	# UPKEEP:
@@ -49,15 +50,16 @@ def format_player_data(player_data, first_time):
 	home = home.replace(to_replace = '@', value = 0)
 	home[home.isnull()] = 1
 	player_data["Home"] = home
-	t1 = hf.time_checkpoint(t0, t0, "CONVERTED HOME TO NUMERIC")
+	tp = hf.time_checkpoint(t0, tp, "CONVERTED HOME TO NUMERIC")
 
 	# NUMERIC DATE AND PLAYER GAME NUMBER:
 	# does not change existing 'Date' column, simply adds 'NumericDate'
 	player_data = hf.add_numeric_date(player_data)
-	t2 = hf.time_checkpoint(t0, t1, "ADDED NUMERIC DATE")
-	# add in PlayerGameNumber
+	tp = hf.time_checkpoint(t0, tp, "ADDED NUMERIC DATE")
+
+	# PLAYER GAME NUMBER
 	player_data = hf.calculate_game_number(player_data, "Player")
-	t3 = hf.time_checkpoint(t0, t2, "CALCULATED GAME NUMBER")
+	tp = hf.time_checkpoint(t0, tp, "CALCULATED GAME NUMBER")
 
 	# NUMERIC POSITION:
 	# does not change existing 'Pos' column, just adds 'NumPos'
@@ -74,7 +76,11 @@ def format_player_data(player_data, first_time):
 		pos[pos == "C"] = 9
 		pos[pos.isnull()] = -999
 		player_data["NumPos"] = pos.astype(int)
-	t4 = hf.time_checkpoint(t0, t3, "CALCULATED NUMERIC POSITION")
+	tp = hf.time_checkpoint(t0, tp, "CALCULATED NUMERIC POSITION")
+
+	# CALCULATE TEAM SWITCH
+	player_data = hf.calculate_team_change(player_data, 'Player')
+	tp = hf.time_checkpoint(t0, tp, "CALCULATED TEAM SWITCH")
 
 	# CALCULATE FAN DUEL POINTS:
 	player_data["FanDuelScore"] = player_data.PTS + 1.2 * player_data.TRB + 1.5 * player_data.AST + 2 * player_data.BLK + 2 * player_data.STL - player_data.TOV
@@ -112,9 +118,11 @@ def format_player_data(player_data, first_time):
 	ga.get_averages(player_data, "ORBPerMP", "Player", "PlayerGameNumber", day_list, first_time)
 	ga.get_averages(player_data, "BLKPerMP", "Player", "PlayerGameNumber", day_list, first_time)
 
-	t5 = hf.time_checkpoint(t0, t4, "FINISHED CALCULATING PLAYER AVERAGES")
+	tp = hf.time_checkpoint(t0, tp, "FINISHED CALCULATING PLAYER AVERAGES")
 	hf.error_checking(player_data, "FINISHED FORMATTING PLAYER DATA", 0)
 
+	#############################################################################################
+	# PLAYER DATA DATAFRAME INFORMATION
 	# NUMROWS:
 	# 384600
 	# Rank 0 0 0
@@ -316,6 +324,7 @@ def format_player_data(player_data, first_time):
 	#L30PlayerBLKPerMP 0 59729 59729
 	#L40PlayerBLKPerMP 0 74159 74159
 	#L50PlayerBLKPerMP 0 87331 87331
+	#############################################################################################
 
 	return player_data
 

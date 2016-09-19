@@ -23,8 +23,6 @@ def get_expected_stats(df, column, end_string):
 		df2["L" + str(i) + "Exp" + column] = pace_column.multiply(df2.loc[:,"L" + str(i) + column + end_string])
 		df2.loc[df2.loc[:, "L" + str(i) + "Exp" + column] > 200, "L" + str(i) + "Exp" + column] = -999
 		df2.loc[df2.loc[:, "L" + str(i) + "Exp" + column] < 0, "L" + str(i) + "Exp" + column] = -999
-	print 'here2'
-
 
 	df2 = df2.drop(["L" + str(i) + column + end_string for i in previous_games],1)
 
@@ -99,7 +97,7 @@ def sort_and_reindex(df, sort_cols):
 # of all 'n_play' to get an estimate of any 'usage gaps'
 # must specify the 'column' that has the % stat we are concerned with 
 # and 'n_play' which indicates the number of players per team we are concerned with
-def get_expected_usage(df, column, n_play):
+def get_expected_usage(df, column, n_play, replace_na):
 	df = df.sort_values(by = ['Team','Date'])
 	df.index = xrange(len(df.index))
 
@@ -107,7 +105,11 @@ def get_expected_usage(df, column, n_play):
 	# this means that we are assuming any player who
 	# has not played more than 10 games can be expected
 	# to accumulate around 10% of stats while on floor
-	col = df.loc[:,column]
+	col = df[column]
+
+	# REPLACE ANY -999 IN COLUMN WITH .10
+	col[col < 0] = replace_na
+	df[column] = col
 
 	df["Avg" + column] = pd.rolling_mean(df.loc[:,column], n_play)
 	every_nth = df.loc[:,'Avg' + column].ix[[(n_play * (i + 1)) - 1 for i in range((len(df.index)/n_play))]]
@@ -127,7 +129,6 @@ def get_expected_usage(df, column, n_play):
 # MERGES TEAM AND PLAYER DATA SETS:
 # merges on columns that can be merged on and remove rows that 
 # are unnecessary
-
 def merge_team_and_player_sets(player_data, team_data):
 	if 'Pred' in player_data.columns:
 		full_data = pd.merge(player_data, team_data, on = ['Team','Opp','Home','Pred','NumericDate'])
@@ -142,6 +143,11 @@ def merge_team_and_player_sets(player_data, team_data):
 		full_data.drop('Home_y', 1, inplace = 1)
 
 	return full_data
+
+
+def convert_excel_date_format(file_name, date_column):
+	df = pd.read_csv(file_name, parse_dates = [date_column])
+	df.to_csv(file_name, date_format= '%m-%d-%Y', index = False)
 
 # Removes unnecessary columns from data frames
 #
@@ -190,7 +196,6 @@ def reformat_excel_dates(df):
 # specifies the column we are finding the game number for. For example,
 # if we are looking for each player's game number, we use 'Player' as 
 # the 'sort_column' argument
-
 def calculate_game_number(df, sort_column):
 	n = len(df.index)
 
@@ -204,6 +209,29 @@ def calculate_game_number(df, sort_column):
 	for i in xrange(len(counts.index)):
 		game_number = game_number + range(1,counts[i]+1)
 	df[sort_column + "GameNumber"] = game_number
+
+	return df
+
+# finds when a player transitions to anther team
+# the first game a player is on a new team, the 'TeamChange'
+# column will be marked with a 10, this number then decays
+# to 0 to give an indicator of how long a player has been with a new team
+def calculate_team_change(df, sort_column):
+	n = len(df.index)
+
+	df = df.sort_values(by = [sort_column,"Date"])
+	df.index = xrange(n)
+
+	team_change = [0] * n
+
+	for i in xrange(1,11):
+		prev_game_team = df['Team'].shift(i)
+		prev_player = df[sort_column].shift(i)
+
+		col = ((df[sort_column] == prev_player) & (df['Team'] != prev_game_team)).astype(int)
+		team_change = col * (11 - i) + team_change
+
+	df['TeamChange'] = team_change
 
 	return df
 
