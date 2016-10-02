@@ -12,7 +12,7 @@ warnings.filterwarnings('ignore')
 #  first time and doesn't have all the columns already established
 #
 #  The data frame should have the following format:
-#  Columns: 
+#  Columns:
 #  Player, Age, Pos, Date, Team, Home, Opp, Result, GS, MP
 #
 #  FG, FGA, FG%, 2P, 2PA, 2P%, 3P, 3PA, 3P%, FT, FTA, FT%,
@@ -100,7 +100,7 @@ def format_player_data(player_data, first_time):
 	ga.get_averages(player_data, "3P%", "Player", "PlayerGameNumber", day_list, first_time)
 
 	# PER MINUTE STATS:
-	player_data["PTSPerMP"] = player_data.PTS / player_data.MP 
+	player_data["PTSPerMP"] = player_data.PTS / player_data.MP
 	player_data["ASTPerMP"] = player_data.AST / player_data.MP
 	player_data["TRBPerMP"] = player_data.TRB / player_data.MP
 	player_data["DRBPerMP"] = player_data.DRB / player_data.MP
@@ -327,4 +327,3 @@ def format_player_data(player_data, first_time):
 	#############################################################################################
 
 	return player_data
-

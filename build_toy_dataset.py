@@ -5,19 +5,19 @@ import build_prediction_set as bps
 
 def build_toy_set():
 	# FILE AND DATE FOR PREDICTION SET
-	file = 'FanDuelFiles/FanDuel-NBA-2016-02-27-14807-players-list.csv'
+	f = 'DataSets/FanDuelFiles/FanDuel-NBA-2016-02-27-14807-players-list.csv'
 	date = '2016-02-27'
-	'''
+
 	# SELECTS ONLY RECENT GAMES AND DUMPS TO:
 	# 'player_dataset_toy.csv' and 'team_dateset_toy.csv'
-	player_data = pd.read_csv('ScrapedData/raw_player_data.csv')
-	team_data = pd.read_csv('ScrapedData/raw_team_data.csv')
+	player_data = pd.read_csv('DataSets/ScrapedData/raw_player_data.csv')
+	team_data = pd.read_csv('DataSets/ScrapedData/raw_team_data.csv')
 	new_player_data = pd.DataFrame()
 	new_team_data = pd.DataFrame()
 
-	bps.build_prediction_set(file, date)
-	prediction_set_team = pd.read_csv('prediction_set_team.csv')
-	prediction_set_player = pd.read_csv('prediction_set_player.csv')
+	bps.build_prediction_set(f, date)
+	prediction_set_team = pd.read_csv('DataSets/PredictionSets/prediction_set_team.csv')
+	prediction_set_player = pd.read_csv('DataSets/PredictionSets/prediction_set_player.csv')
 
 	player_data = hf.add_numeric_date(player_data)
 	team_data = hf.add_numeric_date(team_data)
@@ -33,7 +33,6 @@ def build_toy_set():
 	full_team_data = data[1]
 	full_player_data.to_csv('full_player_data.csv', index = False)
 	full_team_data.to_csv('full_team_data.csv', index = False)
-	'''
 
 	full_player_data = pd.read_csv('full_player_data.csv')
 	full_team_data = pd.read_csv('full_team_data.csv')
@@ -46,6 +45,5 @@ def build_toy_set():
 
 	full_data_toy.to_csv('full_dataset_toy.csv', index = False)
 
-
-build_toy_set()
-
+if __name__ == "__main__":
+	build_toy_set()
