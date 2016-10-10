@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings("ignore")
 import time
 from datetime import timedelta
 from stat_lists import *
@@ -7,17 +9,17 @@ import scipy as sp
 import matplotlib.pyplot as plt
 
 # Plotting
-def eda_plotting(df, stat_container, selection_function):
+def eda_plotting(df, stat_container, selection_function, subset):
     for key, value in stat_container.iteritems():
         for window in value:
             # Create our x and y
             x, y = selection_function(window, key, value)
 
             # Scatter plot and print out correlation
-            scatter_plot_eda(df, x, y)
+            scatter_plot_eda(df, x, y, subset)
 
 
-def scatter_plot_eda(df, x, y):
+def scatter_plot_eda(df, x, y, subset):
     # Select columns of interest and remove any NaN
     df2 = df[[x, y]]
     df2 = df2[np.isfinite(df2.iloc[:,0])]
@@ -34,4 +36,5 @@ def scatter_plot_eda(df, x, y):
     plt.scatter(df2.iloc[random_indices,0], df2.iloc[random_indices,1])
     plt.xlabel(df2.columns.values[0])
     plt.ylabel(df2.columns.values[1])
+    plt.title('Subset: ' + subset)
     plt.show()

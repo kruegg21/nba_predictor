@@ -3,12 +3,12 @@ import pandas as pd
 def build_prediction_set(file, date):
 	df = pd.read_csv(file)
 
-	######################	
-	# FAN DUEL PLAYER LIST	
+	######################
+	# FAN DUEL PLAYER LIST
 	# HOME:
 	home = [1] * len(df.index)
 	for i in xrange(len(df.index)):
-		game = df.loc[i,'Game'] 
+		game = df.loc[i,'Game']
 		if (game[0:3] == df.loc[i,'Team']) | (game[0:2] == df.loc[i,'Team']) :
 			home[i] = 0
 	df["Home"] = home
@@ -51,8 +51,8 @@ def build_prediction_set(file, date):
 	prediction_set_player["Date"] = date
 
 	# FIND WAY TO ADD IN MINUTES PLAYED MANUALLY USING L20 MP AS REFERENCE
-	# load 
-	
+	# load
+
 	# ADD POSITION BASED ON OUT FULL DATASET
 
 	# MATCH BASKETBALL REFERENCE:
@@ -83,5 +83,5 @@ def build_prediction_set(file, date):
 	# DATE:
 	prediction_set_team["Date"] = date
 
-	# DUMP: 
+	# DUMP:
 	prediction_set_team.to_csv('DataSets/PredictionSets/prediction_set_team.csv')
