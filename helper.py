@@ -1,6 +1,7 @@
 import warnings
 warnings.filterwarnings("ignore")
 import time
+import pickle
 from datetime import timedelta
 from stat_lists import *
 import pandas as pd
@@ -8,6 +9,8 @@ import numpy as np
 import scipy as sp
 from os import walk
 from datetime import datetime
+import matplotlib.pyplot as plt
+import seaborn
 
 # Timing function
 def timeit(method):
@@ -48,84 +51,6 @@ def filter_out_prediction(df):
 
 
 
-# Data loading functions
-def read_raw_player_data():
-    df = read_data('Raw/raw_player')
-    mark_new(df)
-    return df
-
-def read_raw_team_data():
-    df = (read_data('Raw/raw_team'))
-    mark_new(df)
-    return df
-
-def read_new_player_data():
-    df = read_data('new_player')
-    mark_new(df)
-    return df
-
-def read_new_team_data():
-    df = read_data('new_team')
-    mark_new(df)
-    return df
-
-def read_player_prediction_data():
-    """
-    Data will be marked 'New' and 'Prediction'
-    in 'read_prediction_data' function
-    """
-    return read_prediction_data('player')
-
-def read_team_prediction_data():
-    """
-    Data will be marked 'New' and 'Prediction'
-    in 'read_prediction_data' function
-    """
-    return read_prediction_data('team')
-
-def read_player_data():
-    """
-    Reads and return 'player_data.csv' if it exists and 'Raw/raw_player.csv'
-    if not.
-    """
-    return read_data('player', 'Raw/raw_player')
-
-def read_team_data():
-    """
-    Reads and returns 'team_data.csv' if it exists and 'Raw/raw_team.csv'
-    if not.
-    """
-    return read_data('team', 'Raw/raw_team')
-
-def read_merged_data():
-    return read_data('merged')
-
-def read_fan_duel_file(file_name):
-    df = pd.read_csv(file_name)
-    mark_new(df)
-    return df
-
-# Abstracted data loading functions
-def read_data(label, backup_label = None):
-    # Read in data
-    try:
-        df = pd.read_csv('Data/' + label + '_data.csv')
-        convert_to_datetime(df)
-        unmark_pred(df)
-        unmark_new(df)
-    except:
-        df = pd.read_csv('Data/' + backup_label + '_data.csv')
-        convert_to_datetime(df)
-        unmark_pred(df)
-        mark_new(df)
-
-    # Rename certain columns to make names universal
-    if label[-4:] == 'team':
-        make_better_team_column_names(df)
-    else:
-        make_better_player_column_names(df)
-    return df
-
 
 
 
@@ -158,59 +83,6 @@ def unmark_pred(df):
 
 
 
-
-
-
-# Functions to make prediction data
-"""
-Reads FanDuel file and makes the data compatible
-"""
-def make_team_prediction_data():
-    return make_prediction_data('team')
-
-def make_player_prediction_data():
-    return make_prediction_data('player')
-
-def make_prediction_data(label):
-    file_name = find_fd_filename()
-
-    # Read in fd file
-    df = read_fan_duel_file(file_name)
-
-    # Find home
-    df['Home'] = np.where(df.Team == df.apply(lambda x: x.Game.split('@')[0], \
-                                                  axis = 1), False, True)
-
-    # Rename columns
-    df.rename(columns = {'Opponent': 'Opp',
-                         'Salary': 'Cost',
-                         'Id': 'FanDuelId'}, inplace = True)
-    # Get date
-    df['Date'] = get_fd_file_date(file_name)
-
-    # Translate team names
-    translate_team_names(df)
-
-    # Get full player name
-    if label == 'player':
-        df['Player'] = (df['First Name'] + str(' ') + df['Last Name'])
-        translate_player_names(df)
-        translate_position_names(df)
-        mark_new(df)
-        mark_pred(df)
-        return df[player_prediction_set_columns]
-
-    if label == 'team':
-        # Select only one row per game
-    	df.drop_duplicates(subset = ['Team', 'Opp', 'Date'], inplace = True)
-        mark_new(df)
-        mark_pred(df)
-        return df[team_prediction_set_columns]
-
-
-
-
-
 # Translation functions
 """
 Translates names from FanDuel format to basketballreference.com format
@@ -234,16 +106,33 @@ def translate(df, dictionary):
 
 # FanDuel file functions
 """
-Looks in data/FanDuel directory to find the most recent file name or date
+Looks in 'data/FanDuel' directory to find the most recent file name or date
 """
 @timeit
-def find_fd_filename():
+def find_fd_filenames():
     """
+    Input:
+        None
+    Output:
+        file_list -- list of strings indicating the file path to the FanDuel files
+                 for the most recent day
+
     Seaches the directory specified in 'fd_files_path' for the fd
     file with the latest date associated with it.
     """
     for root, dirs, files in walk(fd_files_path):
-        return fd_files_path + str(files[np.argmax([get_fd_file_date(f) for f in files])])
+        # Filter out hidden folders
+        files = [f for f in files if not f[0] == '.']
+
+        # Get list of dates
+        date_list = [get_fd_file_date(f) for f in files]
+
+        # Find indices of latest date
+        indices = np.argwhere(np.equal(date_list, np.amax(date_list)))
+
+        # Get file names for the maximum indices
+        file_list = [fd_files_path + str(files[i[0]]) for i in indices]
+        return file_list
 
 def get_fd_file_date(file_name):
     """
@@ -251,39 +140,18 @@ def get_fd_file_date(file_name):
     """
     return datetime.strptime(file_name.split('NBA')[1][1:11], '%Y-%m-%d')
 
+def get_independent_variables(all_columns, dependent_variable):
+    """
+    Input:
+        all_columns -- list of strings of all columns
+        dependent_variable -- string of dependent_variable
+    Output:
+        list of strings of all the columns that are independent variables
+    """
+    return list(set(all_columns) - set([dependent_variable]))
 
-
-
-
-# Dumping data functions
-@timeit
-def dump_player_data(df):
-    dump(df, 'player')
-
-@timeit
-def dump_team_data(df):
-    dump(df, 'team')
-
-@timeit
-def dump_merged_data(df):
-    dump(df, 'merged')
-
-# Abstracted dumping data function
-def dump(df, label):
-    # Removes 'New' and 'Prediction'
-    df = remove_prediction_data(df)
-    unmark_new(df)
-
-    # Prints info on data before dumping
-    print "Number of elements in ", label, len(df)
-
-    # Dumps
-    df.to_csv('Data/' + label + '_data.csv', index = False)
-
-    # Remove DataFrame from memory
-    del df
-
-
+def get_player_id(df):
+    df['PlayerID'] = (df.Id.str.split('-').str[1]).apply(pd.to_numeric)
 
 
 # Selects or removes prediction data
@@ -291,83 +159,54 @@ def dump(df, label):
 Removes/selects prediction data from DataFrame
 """
 def remove_prediction_data(df):
-    return df[df.Prediction == False]
+    if 'Prediction' in df.columns:
+        return df[df.Prediction == False]
+    else:
+        return df
 
 def select_prediction_data(df):
-    return df[df.Prediction == True]
-
-
-
-# Diagnostic Functions
-def print_count_nan(df):
-    """
-    Prints a Series with column names as the index and the number
-    of NaN for each column
-    """
-    s = len(df.index) - df.count()
-    for n_nan, col_name in zip(s, s.index):
-        if n_nan != 0:
-            print col_name, n_nan
-    print "\n"
-
-def print_new_pred_counts(df, label):
-    """
-    Prints the counts of rows that are new and prediction
-    """
-    print "The number of new in", label, "is", np.sum(df.New == True)
-    print "The number of prediction in", label, "is", np.sum(df.Prediction == True)
-    print "\n"
-
-def get_date_range(df):
-    """
-    Prints out the earliest and latest date from DataFrame
-    """
-    print "The latest date is: ", df.Date.max()
-    print "The most recent date is: ", df.Date.min(), "\n"
-
-def print_player_data_duplicates(df):
-    # print df[df.duplicated(subset = ['Player', 'Date'], keep = False)][['Player', 'Date', 'Team']]
-    print "The number of duplicate entries is: ", np.sum(df.duplicated(subset = ['Player', 'Date']))
-
-def print_duplicate_indices(df):
-    print df[df.index.duplicated()]
-
-def diagnostics(df, subject = None, columns = None):
-    """
-    1. Print out the number of rows and columns
-    2. Prints first 10 entries
-    3. Prints out date range
-    4. Prints number of duplicate player/date sets
-    5. Prints out number of new and prediction
-    6. Prints a list of all the count of NaN for each column
-    7. Prints out stats for player or team
-    """
-    print "There are", len(df), "rows and", len(df.columns), "columns"
-
-    if columns:
-        print df[columns].head(10)
+    if 'Prediction' in df.columns:
+        return df[df.Prediction == True]
     else:
-        print df.head(5)
+        return df
 
-    get_date_range(df)
 
-    print_player_data_duplicates(df)
+# Pausing function
+def p():
+    raw_input('paused')
 
-    print_new_pred_counts(df, '')
 
-    print_count_nan(df)
+def add_bucketed_minutes(df):
+    df['BucketedMinutes'] = np.floor(df.PlayerMP / 6)
 
-    if subject:
-        if 'Player' in df.columns:
-            if columns:
-                print df[df.Player == subject][columns]
-            else:
-                print df[df.Player == subject]
-        else:
-            if columns:
-                print df[df.Team == subject][columns]
-            else:
-                print df[df.Team == subject]
+
+@timeit
+def add_estimated_game_pace(df, should_train_linear_model = True):
+    """
+    Input:
+        df -- team data DataFrame
+        should_train_linear_model -- boolean indicating if we should train linear model
+    Output:
+        df -- team data DataFrame with 'EstimatedPace' added
+
+    Calculates the estimated pace using 'linear_model' function.
+    Transforms pace rolling averages into the rolling averages for the home team
+    and the away team.
+    """
+    # Make DataFrame out of columns that we want to use in pace linear model
+    get_home_team_pace(df, 10)
+
+    X = pd.DataFrame([func(df, window) for window in pace_linear_model_window_list
+                          for func in [get_home_team_pace, get_away_team_pace]]).transpose()
+    X['TeamPace'] = df.TeamPace
+
+    # Fit to linear model
+    y = linear_model(X,
+                    'TeamPace',
+                    svr = False,
+                    train = should_train_linear_model)
+    df['EstimatedPace'] = y
+
 
 
 
@@ -514,7 +353,8 @@ def convert_to_datetime(df):
     """
     Converts the 'Date' column to datetime
     """
-    df['Date'] = pd.to_datetime(df.Date)
+    if 'Date' in df.columns:
+        df['Date'] = pd.to_datetime(df.Date)
 
 def remove_nan_rows(df, column):
     """
@@ -534,8 +374,8 @@ def make_position_numeric(df):
     df['Position'] = df['Pos'].map(position_dictionary)
 
 def make_home_dummys(df):
-    if not ((np.any(df.Home) == False) | (np.any(df.Home) == True)):
-        df['Home'] = pd.isnull(df.Home)
+    home_dict = {np.nan: True, '@': False}
+    df.replace({'Home': home_dict}, inplace = True)
 
 def make_better_player_column_names(df):
     for col in main_stat_list:
@@ -628,6 +468,11 @@ def add_fantasy_score(df):
 
 def add_possessions(df):
     """
+    Inputs:
+        df -- DataFrame object to add possessions to
+    Output:
+        None
+
     Estimates the number of possesssions in a game using statistics from both
     teams
     """
@@ -659,7 +504,7 @@ def add_result(df):
 
 def add_position_metric(df):
 	df['PosMetric'] = - df.Last10AveragePlayerAST - df['3PA'] + 2 * \
-                        df.Last10AveragePlayerBLK + df.Last10AveragePlayerORB
+                        2 * df.Last10AveragePlayerORB
 
 def add_opponenet_per_possession_stats(df):
     for stat in opponent_possession_adjusted_stats_list:
@@ -686,8 +531,6 @@ def get_home_team_pace(df, window):
 def per_minute_stats(df, minute_col, stat_list):
     for stat in stat_list:
         df[stat + 'PerMinute'] = df[stat]/df[minute_col]
-
-
 
 
 

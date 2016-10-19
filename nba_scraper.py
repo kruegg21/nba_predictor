@@ -4,9 +4,12 @@ import urllib
 from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
-import helper_functions as hf
 import datetime
 from helper import *
+
+def scrape():
+    most_recent_date = read_team_data().Date.max().strftime('%Y-%m-%d')
+    scrape_new_data(most_recent_date, only_team = False)
 
 def get_page_data(url, feature_names):
 	# Load HTML data from page into pagetext

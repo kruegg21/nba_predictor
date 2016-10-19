@@ -1,0 +1,19 @@
+####################
+Columns Used: Index([u'Last10AveragePlayerDRB', u'Last10AveragePlayerDRBPerMinute',
+       u'Last20AveragePlayerDRB', u'Last20AveragePlayerDRBPerMinute',
+       u'Last5AveragePlayerDRB', u'Last5AveragePlayerDRBPerMinute',
+       u'Last5AverageOppAllowedDRB', u'Last10AverageOppAllowedDRB',
+       u'Last20AverageOppAllowedDRB', u'Last5AveragePlayerDRBPerPossession',
+       u'Last10AveragePlayerDRBPerPossession',
+       u'Last20AveragePlayerDRBPerPossession',
+       u'Last5PossessionMinuteAdjustedPlayerDRB',
+       u'Last10PossessionMinuteAdjustedPlayerDRB',
+       u'Last20PossessionMinuteAdjustedPlayerDRB', u'BucketedMinutes',
+       u'ChangedTeams', u'GS', u'Home', u'PlayerSeasonGameNumber',
+       u'PlayerGameNumber', u'Position', u'BackToBack', u'BackToBackHome',
+       u'BackToBackAway', u'EstimatedPlayerPossessions', u'EstimatedPace'],
+      dtype='object')
+Best Parameters: {'n_estimators': 10}
+Best Score: 0.479060420031
+
+
