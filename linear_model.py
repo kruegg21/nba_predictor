@@ -1,7 +1,7 @@
-from helper import get_independent_variables
 import numpy as np
 import pandas as pd
 import pickle
+from sklearn.grid_search import GridSearchCV
 from sklearn.linear_model import Lasso
 from sklearn.linear_model import Ridge
 from sklearn.preprocessing import PolynomialFeatures
@@ -25,6 +25,10 @@ def linear_model(df,
     Output:
         A Series of predictions for dependent variable
     """
+
+    # Print information
+    models = [model for model in [ridge, lasso, svr] if model == True]
+    "Using {} models to predict {}".format(models, dependent_variable)
 
     # Get independent variables
     independent_variables = get_independent_variables(df.columns,
@@ -141,3 +145,13 @@ def linear_model(df,
 
     # Predict using pickle model
     return pd.Series(linear_model.predict(X_pred), index = prediction_indices)
+
+def get_independent_variables(all_columns, dependent_variable):
+    """
+    Input:
+        all_columns -- list of strings of all columns
+        dependent_variable -- string of dependent_variable
+    Output:
+        list of strings of all the columns that are independent variables
+    """
+    return list(set(all_columns) - set([dependent_variable]))

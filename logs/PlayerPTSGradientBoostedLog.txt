@@ -1,0 +1,301 @@
+
+
+
+----------------------------------------
+Train Set:
+Start date 1999-01-01, end date 2016-09-01, with 5 splits and                 bucketed minutes cutoff of 3
+
+Columns Used:
+	BackToBack
+	BackToBackAway
+	BackToBackHome
+	BucketedMinutes
+	ChangedTeams
+	EstimatedPace
+	EstimatedPlayerPossessions
+	GS
+	Home
+	Last10AverageOppAllowedPTS
+	Last10AverageOppAllowedPTSPerPossession
+	Last10AveragePlayerPTS
+	Last10AveragePlayerPTSPerMinute
+	Last10AveragePlayerPTSPerPossession
+	Last10PossessionMinuteAdjustedPlayerPTS
+	Last20AverageOppAllowedPTS
+	Last20AverageOppAllowedPTSPerPossession
+	Last20AveragePlayerPTS
+	Last20AveragePlayerPTSPerMinute
+	Last20AveragePlayerPTSPerPossession
+	Last20PossessionMinuteAdjustedPlayerPTS
+	Last5AverageOppAllowedPTS
+	Last5AverageOppAllowedPTSPerPossession
+	Last5AveragePlayerPTS
+	Last5AveragePlayerPTSPerMinute
+	Last5AveragePlayerPTSPerPossession
+	Last5PossessionMinuteAdjustedPlayerPTS
+	PlayerGameNumber
+	PlayerSeasonGameNumber
+	Position
+
+Parameter Grid:
+	colsample_bytree: [0.3]
+	silent: [1]
+	bst:max_depth: [5]
+	subsample: [0.3]
+	bst:eta: [0.01]
+	gamma: [0.5]
+	lambda: [0.5]
+
+Best Parameters:
+	colsample_bytree: 0.3
+	silent: 1
+	bst:max_depth: 5
+	subsample: 0.3
+	bst:eta: 0.01
+	gamma: 0.5
+	lambda: 0.5
+	num_boost_round: 21/500
+
+Best Score: 5.3043248
+
+
+----------------------------------------
+Train Set:
+Start date 1999-01-01, end date 2016-09-01, with 5 splits and                 bucketed minutes cutoff of 3
+
+Columns Used:
+	BackToBack
+	BackToBackAway
+	BackToBackHome
+	BucketedMinutes
+	ChangedTeams
+	EstimatedPace
+	EstimatedPlayerPossessions
+	GS
+	Home
+	Last10AverageOppAllowedPTS
+	Last10AverageOppAllowedPTSPerPossession
+	Last10AveragePlayerPTS
+	Last10AveragePlayerPTSPerMinute
+	Last10AveragePlayerPTSPerPossession
+	Last10PossessionMinuteAdjustedPlayerPTS
+	Last20AverageOppAllowedPTS
+	Last20AverageOppAllowedPTSPerPossession
+	Last20AveragePlayerPTS
+	Last20AveragePlayerPTSPerMinute
+	Last20AveragePlayerPTSPerPossession
+	Last20PossessionMinuteAdjustedPlayerPTS
+	Last5AverageOppAllowedPTS
+	Last5AverageOppAllowedPTSPerPossession
+	Last5AveragePlayerPTS
+	Last5AveragePlayerPTSPerMinute
+	Last5AveragePlayerPTSPerPossession
+	Last5PossessionMinuteAdjustedPlayerPTS
+	PlayerGameNumber
+	PlayerSeasonGameNumber
+	Position
+
+Parameter Grid:
+	colsample_bytree: [0.3]
+	silent: [1]
+	bst:max_depth: [5]
+	subsample: [0.3]
+	bst:eta: [0.01]
+	gamma: [0.5]
+	lambda: [0.5]
+
+Best Parameters:
+	colsample_bytree: 0.3
+	silent: 1
+	bst:max_depth: 5
+	subsample: 0.3
+	bst:eta: 0.01
+	gamma: 0.5
+	lambda: 0.5
+	num_boost_round: 21/500
+
+Best Score: 5.3043248
+
+
+----------------------------------------
+Train Set:
+Start date 1999-01-01, end date 2016-09-01, with 5 splits and                 bucketed minutes cutoff of 3
+
+Columns Used:
+	BackToBack
+	BackToBackAway
+	BackToBackHome
+	BucketedMinutes
+	ChangedTeams
+	EstimatedPace
+	EstimatedPlayerPossessions
+	GS
+	Home
+	Last10AverageOppAllowedPTS
+	Last10AverageOppAllowedPTSPerPossession
+	Last10AveragePlayerPTS
+	Last10AveragePlayerPTSPerMinute
+	Last10AveragePlayerPTSPerPossession
+	Last10PossessionMinuteAdjustedPlayerPTS
+	Last20AverageOppAllowedPTS
+	Last20AverageOppAllowedPTSPerPossession
+	Last20AveragePlayerPTS
+	Last20AveragePlayerPTSPerMinute
+	Last20AveragePlayerPTSPerPossession
+	Last20PossessionMinuteAdjustedPlayerPTS
+	Last25AveragePlayerPTS
+	Last25AveragePlayerPTSPerMinute
+	Last5AverageOppAllowedPTS
+	Last5AverageOppAllowedPTSPerPossession
+	Last5AveragePlayerPTS
+	Last5AveragePlayerPTSPerMinute
+	Last5AveragePlayerPTSPerPossession
+	Last5PossessionMinuteAdjustedPlayerPTS
+	PlayerGameNumber
+	PlayerSeasonGameNumber
+	Position
+
+Parameter Grid:
+	colsample_bytree: [0.3]
+	silent: [1]
+	bst:max_depth: [5]
+	subsample: [0.3]
+	bst:eta: [0.01]
+	gamma: [0.5]
+	lambda: [0.5]
+
+Best Parameters:
+	colsample_bytree: 0.3
+	silent: 1
+	bst:max_depth: 5
+	subsample: 0.3
+	bst:eta: 0.01
+	gamma: 0.5
+	lambda: 0.5
+	num_boost_round: 19/500
+
+Best Score: 5.290403
+
+
+----------------------------------------
+Train Set:
+Start date 1999-01-01, end date 2016-09-01, with 5 splits and                 bucketed minutes cutoff of 3
+
+Columns Used:
+	BackToBack
+	BackToBackAway
+	BackToBackHome
+	BucketedMinutes
+	ChangedTeams
+	EstimatedPace
+	EstimatedPlayerPossessions
+	GS
+	Home
+	Last10AverageOppAllowedPTS
+	Last10AverageOppAllowedPTSPerPossession
+	Last10AveragePlayerPTS
+	Last10AveragePlayerPTSPerMinute
+	Last10AveragePlayerPTSPerPossession
+	Last10PossessionMinuteAdjustedPlayerPTS
+	Last20AverageOppAllowedPTS
+	Last20AverageOppAllowedPTSPerPossession
+	Last20AveragePlayerPTS
+	Last20AveragePlayerPTSPerMinute
+	Last20AveragePlayerPTSPerPossession
+	Last20PossessionMinuteAdjustedPlayerPTS
+	Last25AveragePlayerPTS
+	Last25AveragePlayerPTSPerMinute
+	Last5AverageOppAllowedPTS
+	Last5AverageOppAllowedPTSPerPossession
+	Last5AveragePlayerPTS
+	Last5AveragePlayerPTSPerMinute
+	Last5AveragePlayerPTSPerPossession
+	Last5PossessionMinuteAdjustedPlayerPTS
+	PlayerGameNumber
+	PlayerSeasonGameNumber
+	Position
+	PossessionMinuteAdjustedPlayerPTS
+
+Parameter Grid:
+	colsample_bytree: [0.3]
+	silent: [1]
+	bst:max_depth: [5]
+	subsample: [0.3]
+	bst:eta: [0.01]
+	gamma: [0.5]
+	lambda: [0.5]
+
+Best Parameters:
+	colsample_bytree: 0.3
+	silent: 1
+	bst:max_depth: 5
+	subsample: 0.3
+	bst:eta: 0.01
+	gamma: 0.5
+	lambda: 0.5
+	num_boost_round: 16/500
+
+Best Score: 5.2993558
+
+
+----------------------------------------
+Train Set:
+Start date 1999-01-01, end date 2016-09-01, with 5 splits and                 bucketed minutes cutoff of 3
+
+Columns Used:
+	BackToBack
+	BackToBackAway
+	BackToBackHome
+	BucketedMinutes
+	ChangedTeams
+	EstimatedPace
+	EstimatedPlayerPossessions
+	GS
+	Home
+	Last10AverageOppAllowedPTS
+	Last10AverageOppAllowedPTSPerPossession
+	Last10AveragePlayerPTS
+	Last10AveragePlayerPTSPerMinute
+	Last10AveragePlayerPTSPerPossession
+	Last10PossessionMinuteAdjustedPlayerPTS
+	Last20AverageOppAllowedPTS
+	Last20AverageOppAllowedPTSPerPossession
+	Last20AveragePlayerPTS
+	Last20AveragePlayerPTSPerMinute
+	Last20AveragePlayerPTSPerPossession
+	Last20PossessionMinuteAdjustedPlayerPTS
+	Last25AveragePlayerPTS
+	Last25AveragePlayerPTSPerMinute
+	Last5AverageOppAllowedPTS
+	Last5AverageOppAllowedPTSPerPossession
+	Last5AveragePlayerPTS
+	Last5AveragePlayerPTSPerMinute
+	Last5AveragePlayerPTSPerPossession
+	Last5PossessionMinuteAdjustedPlayerPTS
+	PlayerGameNumber
+	PlayerSeasonGameNumber
+	Position
+	PossessionMinuteAdjustedPlayerPTS
+
+Parameter Grid:
+	colsample_bytree: [0.4, 0.5, 0.6]
+	silent: [1]
+	bst:max_depth: [5]
+	subsample: [0.4, 0.5, 0.6]
+	bst:eta: [0.01]
+	gamma: [0.1, 0.3, 0.5]
+	lambda: [0.1, 0.3, 0.5]
+
+Best Parameters:
+	colsample_bytree: 0.6
+	silent: 1
+	bst:max_depth: 5
+	subsample: 0.6
+	bst:eta: 0.01
+	gamma: 0.1
+	lambda: 0.1
+	num_boost_round: 16/500
+
+Best Score: 5.2732098
+
+

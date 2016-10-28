@@ -12,7 +12,7 @@ from linear_model import linear_model
 from random_forest import train_random_forest, predict_random_forest
 from optimal_lineups import optimize_lineups
 from minute_estimation import create_minutes_estimation, read_minute_estimation
-from cross_validation import cv_method
+from cross_validation import cv_method, k_folds_cv
 
 def build_merged_data(player_df, team_df, train = True):
     """
@@ -63,11 +63,11 @@ def build_merged_data(player_df, team_df, train = True):
         linear_model_df = ['Last' + str(window) + 'Average' + key for window in value] + \
                           ['BucketedMinutes', 'EstimatedPace'] + \
                           [basic_feature]
-
-        linear_model(merged_df[linear_model_df],
-                          basic_feature,
-                          svr = False,
-                          train = train)
+        feature_name = 'PossessionMinuteAdjusted' + key[:9]
+        merged_df[feature_name] = linear_model(merged_df[linear_model_df],
+                                               basic_feature,
+                                               svr = False,
+                                               train = train)
 
         # Iterate through each window and find the one the best correlation
         for window in value:
@@ -88,7 +88,7 @@ def build_merged_data(player_df, team_df, train = True):
 
 
 def train(should_scrape = True, should_dump = True, should_build = True,
-          should_train_linear_models = True):
+          should_train_linear_models = True, cv = None):
     """
     Takes a DataFrame of player data as 'player_df' and scrapes data not
     included in DataFrame. It then builds the dataset for all the data that
@@ -270,12 +270,14 @@ Things to do:
 about 20 instances of players with the same name having an overlap. There may
 be others without overlap, which will be much more difficult to deal with.
 
-2. Tune and pickle linear models to predict certain stats.
+2. Create a logs for linear models.
+
+3.
 """
 
 if __name__ == "__main__":
     # Specifies cross validation technique to use for training
-    cv = cv_method('time_series', 5, '1999-01-01', '2016-09-01', 3)
+    cv = cv_method(k_folds_cv, 5, '1999-01-01', '2016-09-01', 3)
 
     # Train
     train(should_scrape = False,
@@ -284,10 +286,10 @@ if __name__ == "__main__":
           should_train_linear_models = False,
           cv = cv)
 
-    # Predict
-    predict(should_scrape = False,
-            should_dump = False,
-            should_build = True)
-
-    # Pick optimal lineups
-    optimize_lineups(n_lineups = 100)
+    # # Predict
+    # predict(should_scrape = False,
+    #         should_dump = False,
+    #         should_build = True)
+    #
+    # # Pick optimal lineups
+    # optimize_lineups(n_lineups = 100)

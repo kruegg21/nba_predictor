@@ -5,29 +5,25 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.grid_search import GridSearchCV
 from stat_lists import *
 from variance import get_variance
-from cross_validation import time_series_cv, filter_training_set, cv_method
+from cross_validation import time_series_cv, cv_method, k_folds_cv
 
 def train_random_forest(df, element, cv, log_results = True):
-    # Subset training set
-    df = filter_training_set(df, cv)
-
-    # Select relevent features for element
-    df = select_features(df, element)
-
-    # Create indepentent and dependent variable arrays
-    y_train = df.pop(element).values
-    X_train = df.values
+    #
+    X_train, y_train, splits = prepare_data(df, cv, element)
+    n_features = X.train.shape[1]
+    raw_input()
 
     # Instantiate
     rfr = RandomForestRegressor()
 
     # Grid search cross validate
-    param_grid = {'n_estimators': [10, 100, 200, 500]}
+    param_grid = {'n_estimators': [200],
+                  'max_features': ['auto', 'log2', .3, .4]}
     gscv = GridSearchCV(rfr,
                         param_grid = param_grid,
                         verbose = 20,
                         n_jobs = -1,
-                        cv = cv.method)
+                        cv = splits)
     gscv.fit(X_train, y_train)
 
     # Print out results
@@ -44,6 +40,27 @@ def train_random_forest(df, element, cv, log_results = True):
     # Dump model to pickle
     dump_pickled_model(gscv.best_estimator_,
                        '{}RandomForestRegressor'.format(element))
+
+def prepare_data(df, cv, element):
+    """
+    Filters training set based on constraints specified in 'cv' object.
+    Gets the splits for cross validation specified in 'cv' object.
+    Selects the features we need to train a model for a particular 'element'.
+    """
+    # Subset training set
+    df = filter_training_set(df, cv)
+
+    # Select cross validation splits
+    splits = cv.method(df, cv.splits)
+
+    # Select relevent features for element
+    df = select_features(df, element)
+
+    # Create indepentent and dependent variable arrays
+    y_train = df.pop(element).values
+    X_train = df.values
+
+    return X_train, y_train, splits
 
 def predict_random_forest(df, element):
     """
@@ -124,6 +141,10 @@ def log_random_forest_results(df, gscv, element, cv_method):
 if __name__ == "__main__":
     from read_write import read_merged_data
     df = read_merged_data()
-    cv = cv_method('time_series', 5, '1999-01-01', '2016-09-01', 3)
+    cv = cv_method(method = k_folds_cv,
+                   splits = 5,
+                   start_date = '1999-01-01',
+                   end_date = '2016-09-01',
+                   minutes_cutoff = 3)
 
     train_random_forest(df, 'PlayerPTS', cv, log_results = False)

@@ -6,7 +6,7 @@ basic_features = ['BucketedMinutes', 'ChangedTeams', 'GS', 'Home',
 
 
 # Global lists and dictionaries to choose features to build
-main_stat_list = ['AST', 'MP', 'PTS', 'DRB', 'ORB', 'TOV']
+main_stat_list = ['AST', 'MP', 'PTS', 'DRB', 'ORB', 'TOV', 'STL', 'BLK']
 
 # Removes 'MP' from main stat list
 main_stat_list_minus_minutes = list(set(main_stat_list) - set(['MP']))
@@ -21,8 +21,8 @@ opp_stat_list = ['OppForcedTOV' if stat == 'TOV' else 'OppAllowed' + stat \
 opponent_possession_adjusted_stats_list = opp_stat_list
 
 player_rolling_mean_stat_dict = \
-    dict([('Player' + stat, [5,10,20]) for stat in main_stat_list] + \
-    [('Player' + stat + 'PerMinute', [5,10,20]) for stat in main_stat_list_minus_minutes])
+    dict([('Player' + stat, [5,10,20,23,25,30]) for stat in main_stat_list] + \
+    [('Player' + stat + 'PerMinute', [5,10,20,23,25,30]) for stat in main_stat_list_minus_minutes])
 
 player_post_merge_rolling_mean_stat_dict = \
     dict([('Player' + stat + 'PerPossession', [5,10,20]) \

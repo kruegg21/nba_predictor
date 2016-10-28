@@ -9,6 +9,7 @@ import numpy as np
 import scipy as sp
 from os import walk
 from datetime import datetime
+from linear_model import linear_model
 import matplotlib.pyplot as plt
 import seaborn
 
@@ -139,16 +140,6 @@ def get_fd_file_date(file_name):
     Gets the date from a fd file name string
     """
     return datetime.strptime(file_name.split('NBA')[1][1:11], '%Y-%m-%d')
-
-def get_independent_variables(all_columns, dependent_variable):
-    """
-    Input:
-        all_columns -- list of strings of all columns
-        dependent_variable -- string of dependent_variable
-    Output:
-        list of strings of all the columns that are independent variables
-    """
-    return list(set(all_columns) - set([dependent_variable]))
 
 def get_player_id(df):
     df['PlayerID'] = (df.Id.str.split('-').str[1]).apply(pd.to_numeric)
@@ -462,9 +453,9 @@ def add_player_per_minute_stats(df):
     per_minute_stats(df, 'PlayerMP', ['Player' + stat for stat in main_stat_list_minus_minutes])
 
 def add_fantasy_score(df):
-    df['FanDuelScore'] = df.PlayerPTS + 1.2 * df.PlayerTRB + 1.5 * \
-                         df.PlayerAST + 2 * df.PlayerBLK + 2 * \
-                         df.PlayerSTL - df.PlayerTOV
+    df['FanDuelScore'] = df.PlayerPTS + 1.2 * df.PlayerDRB + \
+                         1.2 * df.PlayerORB + 1.5 * df.PlayerAST + \
+                         2 * df.PlayerBLK + 2 * df.PlayerSTL - df.PlayerTOV
 
 def add_possessions(df):
     """
