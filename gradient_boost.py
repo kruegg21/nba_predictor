@@ -292,7 +292,7 @@ if __name__ == "__main__":
                           minutes_cutoff = 3)
 
     param_grid = {'bst:max_depth':[5],
-    			  'bst:eta':[0.01],
+    			  'bst:eta':[0.1],
     			  'silent':[1],
     			  'gamma':[0.1, 0.3, 0.5],
     			  'lambda':[0.1, 0.3, 0.5],
