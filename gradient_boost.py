@@ -100,14 +100,24 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
     keys, values = zip(*s)
     for i in product(*values):
         params = dict(zip(keys, i))
-        scores = xgboost.cv(params,
-                            dtrain,
-                            num_boost_round = num_boost_round,
-                            nfold = data_info.splits,
-                            early_stopping_rounds = 50,
-                            show_progress = True,
-                            show_stdv = True,
-                            seed = 100)
+        if xgboost.__version__ == '0.6':
+            scores = xgboost.cv(params,
+                                dtrain,
+                                num_boost_round = num_boost_round,
+                                nfold = data_info.splits,
+                                early_stopping_rounds = 50,
+                                verbose_eval = True,
+                                show_stdv = True,
+                                seed = 100)
+        else:
+            scores = xgboost.cv(params,
+                                dtrain,
+                                num_boost_round = num_boost_round,
+                                nfold = data_info.splits,
+                                early_stopping_rounds = 50,
+                                verbose_eval = True,
+                                show_stdv = True,
+                                seed = 100)
         score = np.min(scores['test-rmse-mean'])
         iteration = scores['test-rmse-mean'].idxmin()
         print "Scores for parameters {} are {}".format(scores, params)
