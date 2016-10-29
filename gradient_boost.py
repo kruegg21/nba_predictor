@@ -148,7 +148,7 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
         print params
         print "\n\n"
         with open('logs/{}test.txt'.format(element), 'a+') as f:
-            f.write("{}".format(params))
+            f.write("{} {}".format(params, tt))
         if best_score > score:
             best_score = score
             best_params = params
