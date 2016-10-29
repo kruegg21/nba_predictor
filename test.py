@@ -7,6 +7,7 @@ from team import build_basic_team_data, build_time_series_team_data
 from helper import *
 from stat_lists import *
 from nba_scraper import scrape
+from gradient_boost import *
 from read_write import *
 from linear_model import linear_model
 from random_forest import train_random_forest, predict_random_forest
@@ -275,19 +276,72 @@ be others without overlap, which will be much more difficult to deal with.
 3.
 """
 
-def add_player_position(df):
-    
+@timeit
+def add_player_position(df, data_info):
+    """
+    Input:
+        df -- DataFrame of merged player and team data
+        data_info -- cv_method object to specify what data to predict on
+    Output:
+
+    Loads our current 'FanDuelScoreGradientBoostedRegressor' model and makes
+    residuals column 'R'. Then groups
+    """
+
+    # Read model
+    m = load_pickled_model('FanDuelScoreGradientBoostedRegressor')
+
+    # Add numeric position
+    add_fantasy_score(df)
+    add_position_metric(df)
+    element = 'FanDuelScore'
+    m = load_pickled_model(element + 'GradientBoostedRegressor')
+
+    # Filter to only games with all five starters
+    starters = df[df.GS == 1]
+    all_five = starters.groupby(['Team', 'Date']).filter(lambda x: len(x) == 5)
+    all_five = add_lineup_position(all_five)
+
+    # Calculate residuals for filtered dataset
+    dtrain, all_five, remaining = xgboost_preprocessing(all_five, element, data_info)
+    pred = m.predict(dtrain)
+
+    print len(pred)
+    print len(all_five)
+    raw_input()
+
+    df['R'] = pred - all_five.FanDuelScore
+
+    # Add back 'Team' and 'Date' columns
+    df['Date'] = df_remaining.Date
+    df['Team'] = df_remaining.Team
+
+
+def add_lineup_position(df):
+    num_games = len(df)/5
+    df.sort_values(['Position', 'PosMetric'])
+    df['LineupOrder'] = range(1,6) *
+    return df
 
 if __name__ == "__main__":
     # Specifies cross validation technique to use for training
     cv = cv_method(k_folds_cv, 5, '1999-01-01', '2016-09-01', 3)
 
-    # Train
-    train(should_scrape = False,
-          should_dump = True,
-          should_build = True,
-          should_train_linear_models = False,
-          cv = cv)
+    # # Train
+    # train(should_scrape = False,
+    #       should_dump = True,
+    #       should_build = True,
+    #       should_train_linear_models = False,
+    #       cv = cv)
+    from read_write import read_merged_data
+
+    data_info = cv_method(method = k_folds_cv,
+                          splits = 5,
+                          start_date = '1999-01-01',
+                          end_date = '2016-09-01',
+                          minutes_cutoff = 3)
+    df = read_merged_data()
+    add_player_position(df, data_info)
 
     # # Predict
     # predict(should_scrape = False,

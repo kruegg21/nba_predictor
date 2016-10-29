@@ -1,6 +1,7 @@
 import xgboost
 import numpy as np
 import pandas as pd
+import time
 from helper import add_fantasy_score
 from datetime import datetime
 from itertools import product
@@ -74,22 +75,39 @@ Code to transition from functional architecture to class architecture
 def xgboost_preprocessing(df, element, cv):
     # Select only features we need for particualr stat
     df = filter_training_set(df, cv)
-    df = select_features(df, element, should_dump = True)
+    df, remaining_features = select_features(df, element, should_dump = True)
 
     # Create indepentent and dependent variable arrays
     y_train = df.pop(element).values
     X_train = df.values
 
+    # Add dependent variable back to df
+    df[element] = y_train
+
     # Create DMatrix
-    return xgboost.DMatrix(X_train, label=y_train, missing = -999), df
+    dtrain = xgboost.DMatrix(X_train,
+                             label=y_train,
+                             missing = -999,
+                             feature_names = df.columns)
+    return dtrain, df, remaining_features
 
 def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
-                        num_boost_round = 500, log_results = True):
+                        num_boost_round = 500, early_stopping_rounds = 50,
+                        log_results = True):
     """
     Input:
+        df -- DataFrame
+        element -- string of dependent variable
+        data_info -- cv_method object that specifies how to filter dataset
+        param_grid -- dictionary of parameters to grid search
+        num_boost_round -- int of maximum number of boosting rounds
+        early_stopping_rounds -- int specifying number of early stopping rounds
+        log_results -- bool indicating whether to log results of grid search
     Output:
+        None
     """
-    dtrain, df = xgboost_preprocessing(df, element, data_info)
+    # Processes Data
+    dtrain, df, _ = xgboost_preprocessing(df, element, data_info)
 
     # Grid Search
     best_score = np.inf
@@ -100,12 +118,14 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
     keys, values = zip(*s)
     for i in product(*values):
         params = dict(zip(keys, i))
+        # Start time
+        ts = time.time()
         if xgboost.__version__ == '0.6':
             scores = xgboost.cv(params,
                                 dtrain,
                                 num_boost_round = num_boost_round,
                                 nfold = data_info.splits,
-                                early_stopping_rounds = 50,
+                                early_stopping_rounds = early_stopping_rounds,
                                 verbose_eval = True,
                                 show_stdv = True,
                                 seed = 100)
@@ -114,13 +134,20 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
                                 dtrain,
                                 num_boost_round = num_boost_round,
                                 nfold = data_info.splits,
-                                early_stopping_rounds = 50,
-                                verbose_eval = True,
+                                early_stopping_rounds = early_stopping_rounds,
+                                show_progress = True,
                                 show_stdv = True,
                                 seed = 100)
         score = np.min(scores['test-rmse-mean'])
         iteration = scores['test-rmse-mean'].idxmin()
-        print "Scores for parameters {} are {}".format(scores, params)
+        print "\n\n"
+        tt = time.time() - ts
+        print "Time to run model was {}".format(tt)
+        print scores
+        print params
+        print "\n\n"
+        with open('logs/{}test.txt'.format(element), 'a+') as f:
+            f.write("{}".format(params))
         if best_score > score:
             best_score = score
             best_params = params
@@ -136,54 +163,20 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
                                       best_iteration,
                                       num_boost_round)
 
-def train_xgboost(df, element, cv, log_results = True):
-    dtrain = xgboost_preprocessing(df, element, cv)
+def train_xgboost(df, element = None, params = None,
+                  data_info = None, num_boost_round = 500):
+    """
+    Input:
+    Output:
+    """
+    dtrain, df, _ = xgboost_preprocessing(df, element, data_info)
 
+    model = xgboost.train(params,
+                          dtrain,
+                          num_boost_round = num_boost_round)
 
-    # xgb = XGBoostRegressor()
-    # xgb.fit(X_train, y_train)
-    # print xgb.score(X_train, y_train)
-    # dtrain = xgboost.DMatrix(X_train, label=y_train, missing = -999)
-    params = {'bst:max_depth':5,
-			  'bst:eta':0.01,
-			  'silent':1,
-			  'gamma':0.5,
-			  'lambda':0.5,
-			  'subsample':0.3,
-			  'colsample_bytree':0.3}
-
-    scores = xgboost.cv(params,
-                     dtrain,
-                     num_boost_round = 500,
-                     nfold = 5,
-                     early_stopping_rounds = 25,
-                     show_progress = True,
-                     show_stdv = True,
-                     seed = 100)
-
-    best_score = np.min(scores['test-rmse-mean'])
-    xgb_model = xgboost.XGBRegressor()
-
-    param_grid = {'max_depth' : [5,10,15]}
-
-    gscv = GridSearchCV(xgb_model,
-                        param_grid = param_grid,
-                        verbose = 20,
-                        n_jobs = -1,
-                        cv = splits)
-    gscv.fit(X_train, y_train)
-
-    # Print out results
-    # print "Best parameters for", element, "Gradient Boosting:", gscv.best_params_
-    # print "Best score for", element, "Gradient Boosting:", gscv.best_score_
-    #
-    # # Log results
-    # if log_results:
-    #     log_gradient_boosting_results(df, gscv, element, cv)
-    #
-    # # Dump model to pickle
-    # dump_pickled_model(gscv.best_estimator_,
-    #                    '{}GradientBoostedRegressor'.format(element))
+    # Dump model to pickle
+    dump_pickled_model(model, '{}GradientBoostedRegressor'.format(element))
 
 def select_features(df, element, should_dump = True):
     """
@@ -199,13 +192,16 @@ def select_features(df, element, should_dump = True):
     compatible with tree methods.
     """
     if element[:6] == 'Player':
-        features_list = get_relevent_columns(element) + [element] + basic_features
+        features_list = get_relevent_columns(df, element) + [element] + basic_features
     else:
         features_list = []
         for stat in main_stat_list_minus_minutes:
-            features_list += get_relevent_columns(stat)
+            features_list += get_relevent_columns(df, stat)
         features_list += [element]
         features_list += basic_features
+
+    # Get features that are not selected
+    remaining_features = df[list(set(df.columns) - set(features_list))]
 
     # Mark all NaN and Inf as -999
     features = df[features_list].replace([np.inf, np.nan], -999)
@@ -220,9 +216,9 @@ def select_features(df, element, should_dump = True):
     for column in features.columns:
         features[column] = features[column].astype(float)
 
-    return features
+    return features, remaining_features
 
-def get_relevent_columns(element):
+def get_relevent_columns(df, element):
     """
     Input:
         element -- string of statistic we are getting columns for
@@ -301,22 +297,25 @@ if __name__ == "__main__":
                           end_date = '2016-09-01',
                           minutes_cutoff = 3)
 
-    param_grid = {'bst:max_depth':[5],
+    param_grid = {
+                  'bst:max_depth':[5],
     			  'bst:eta':[0.01],
     			  'silent':[1],
     			  'gamma':[0.1, 0.3, 0.5],
     			  'lambda':[0.1, 0.3, 0.5],
     			  'subsample':[0.4, 0.5, 0.6],
-    			  'colsample_bytree':[0.4, 0.5, 0.6]}
+    			  'colsample_bytree':[0.6]
+                 }
 
-    if False:
+    if True:
         xgboost_cv = grid_search_xgboost(df,
                                          element = 'PlayerPTS',
                                          data_info = data_info,
                                          param_grid = param_grid,
                                          num_boost_round = 500,
+                                         early_stopping_rounds = 50,
                                          log_results = True)
-    if True:
+    if False:
         print "Grid Search GB for FanDuelScore"
         add_fantasy_score(df)
         xgboost_cv = grid_search_xgboost(df,
@@ -324,4 +323,23 @@ if __name__ == "__main__":
                                          data_info = data_info,
                                          param_grid = param_grid,
                                          num_boost_round = 500,
+                                         early_stopping_rounds = 50,
                                          log_results = True)
+
+    if False:
+        add_fantasy_score(df)
+        params = {
+                  'colsample_bytree': 0.4,
+                  'silent': 1,
+                  'bst:max_depth': 5,
+                  'subsample': 0.6,
+                  'bst:eta': 0.01,
+                  'gamma': 0.1,
+                  'lambda': 0.1
+                 }
+
+        train_xgboost(df,
+                      element = 'FanDuelScore',
+                      params = params,
+                      data_info = data_info,
+                      num_boost_round = 17)
