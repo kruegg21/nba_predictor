@@ -81,14 +81,15 @@ def xgboost_preprocessing(df, element, cv):
     y_train = df.pop(element).values
     X_train = df.values
 
-    # Add dependent variable back to df
-    df[element] = y_train
-
     # Create DMatrix
     dtrain = xgboost.DMatrix(X_train,
                              label=y_train,
                              missing = -999,
                              feature_names = df.columns)
+
+    # Add dependent variable back to df
+    df[element] = y_train
+    
     return dtrain, df, remaining_features
 
 def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
