@@ -307,7 +307,7 @@ if __name__ == "__main__":
     			  'colsample_bytree':[0.6]
                  }
 
-    if True:
+    if False:
         xgboost_cv = grid_search_xgboost(df,
                                          element = 'PlayerPTS',
                                          data_info = data_info,
@@ -315,7 +315,7 @@ if __name__ == "__main__":
                                          num_boost_round = 500,
                                          early_stopping_rounds = 50,
                                          log_results = True)
-    if False:
+    if True:
         print "Grid Search GB for FanDuelScore"
         add_fantasy_score(df)
         xgboost_cv = grid_search_xgboost(df,
@@ -323,7 +323,7 @@ if __name__ == "__main__":
                                          data_info = data_info,
                                          param_grid = param_grid,
                                          num_boost_round = 500,
-                                         early_stopping_rounds = 50,
+                                         early_stopping_rounds = 10,
                                          log_results = True)
 
     if False:

@@ -320,7 +320,7 @@ def add_player_position(df, data_info):
 def add_lineup_position(df):
     num_games = len(df)/5
     df.sort_values(['Position', 'PosMetric'])
-    df['LineupOrder'] = range(1,6) *
+    df['LineupOrder'] = range(1,6) * num
     return df
 
 if __name__ == "__main__":
