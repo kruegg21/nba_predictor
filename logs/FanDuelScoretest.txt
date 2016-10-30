@@ -1,1 +1,1 @@
-{'colsample_bytree': 0.6, 'silent': 1, 'bst:max_depth': 5, 'subsample': 0.4, 'bst:eta': 0.01, 'gamma': 0.1, 'lambda': 0.1}
+{'colsample_bytree': 0.6, 'silent': 1, 'bst:max_depth': 5, 'subsample': 0.4, 'bst:eta': 0.01, 'gamma': 0.1, 'lambda': 0.1}{'colsample_bytree': 0.6, 'silent': 1, 'bst:max_depth': 5, 'subsample': 0.6, 'bst:eta': 0.01, 'gamma': 0.5, 'lambda': 0.5} 804.697820187

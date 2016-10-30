@@ -89,8 +89,16 @@ def xgboost_preprocessing(df, element, cv):
 
     # Add dependent variable back to df
     df[element] = y_train
-    
+
     return dtrain, df, remaining_features
+
+last_dict = {'colsample_bytree': 0.6,
+             'silent': 1,
+             'bst:max_depth': 5,
+             'subsample': 0.6,
+             'bst:eta': 0.01,
+             'gamma': 0.5,
+             'lambda': 0.5}
 
 def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
                         num_boost_round = 500, early_stopping_rounds = 50,
@@ -119,40 +127,47 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
     keys, values = zip(*s)
     for i in product(*values):
         params = dict(zip(keys, i))
-        # Start time
-        ts = time.time()
-        if xgboost.__version__ == '0.6':
-            scores = xgboost.cv(params,
-                                dtrain,
-                                num_boost_round = num_boost_round,
-                                nfold = data_info.splits,
-                                early_stopping_rounds = early_stopping_rounds,
-                                verbose_eval = True,
-                                show_stdv = True,
-                                seed = 100)
-        else:
-            scores = xgboost.cv(params,
-                                dtrain,
-                                num_boost_round = num_boost_round,
-                                nfold = data_info.splits,
-                                early_stopping_rounds = early_stopping_rounds,
-                                show_progress = True,
-                                show_stdv = True,
-                                seed = 100)
-        score = np.min(scores['test-rmse-mean'])
-        iteration = scores['test-rmse-mean'].idxmin()
-        print "\n\n"
-        tt = time.time() - ts
-        print "Time to run model was {}".format(tt)
-        print scores
+
+        # Used if we want to restart a previously unfinshed search
+        passed_last = False
         print params
-        print "\n\n"
-        with open('logs/{}test.txt'.format(element), 'a+') as f:
-            f.write("{} {}".format(params, tt))
-        if best_score > score:
-            best_score = score
-            best_params = params
-            best_iteration = iteration
+        if (params == last_dict) or passed_last:
+            passed_last = True
+
+            # Start time
+            ts = time.time()
+            if xgboost.__version__ == '0.6':
+                scores = xgboost.cv(params,
+                                    dtrain,
+                                    num_boost_round = num_boost_round,
+                                    nfold = data_info.splits,
+                                    early_stopping_rounds = early_stopping_rounds,
+                                    verbose_eval = True,
+                                    show_stdv = True,
+                                    seed = 100)
+            else:
+                scores = xgboost.cv(params,
+                                    dtrain,
+                                    num_boost_round = num_boost_round,
+                                    nfold = data_info.splits,
+                                    early_stopping_rounds = early_stopping_rounds,
+                                    show_progress = True,
+                                    show_stdv = True,
+                                    seed = 100)
+            score = np.min(scores['test-rmse-mean'])
+            iteration = scores['test-rmse-mean'].idxmin()
+            print "\n\n"
+            tt = time.time() - ts
+            print "Time to run model was {}".format(tt)
+            print scores
+            print params
+            print "\n\n"
+            with open('logs/{}test.txt'.format(element), 'a+') as f:
+                f.write("{} {}".format(params, tt))
+            if best_score > score:
+                best_score = score
+                best_params = params
+                best_iteration = iteration
 
     if log_results:
         log_gradient_boosting_results(df,
@@ -344,3 +359,15 @@ if __name__ == "__main__":
                       params = params,
                       data_info = data_info,
                       num_boost_round = 17)
+
+"""
+{'colsample_bytree': 0.6,
+'silent': 1,
+'bst:max_depth': 5,
+'subsample': 0.6,
+'bst:eta': 0.01,
+'gamma': 0.1,
+'lambda': 0.1}
+
+7.497501
+"""
