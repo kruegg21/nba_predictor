@@ -329,7 +329,7 @@ def add_player_position(df, data_info):
     all_five2 = all_five2.merge(all_five, on = ['Player', 'Date', 'Position', 'BucketedMinutes'], how = 'left')
 
     # Dump to csv
-    all_five2[['Player','Date','R','LineupOrder','Position','PosMetric', 'BucketedMinutes', 'Opp']].to_csv('data/residuals.csv', index = False)
+    all_five2.to_csv('data/residuals.csv', index = False)
 
 
 def add_lineup_position(df):

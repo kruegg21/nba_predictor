@@ -150,7 +150,7 @@ def grid_search_round(params, dtrain, num_boost_round = 500,
         score -- float of best score from round
         iteration -- int of iteration that resulted in best score
     """
-
+    print "Running search on {}".format(params)
     if xgboost.__version__ == '0.6':
         scores = xgboost.cv(params,
                             dtrain,
