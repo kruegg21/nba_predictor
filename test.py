@@ -310,30 +310,31 @@ def add_player_position(df, data_info):
     all_five = add_lineup_position(all_five)
 
     # Calculate residuals for filtered dataset
+    all_five2 = all_five.copy()
     dtrain, all_five, remaining = xgboost_preprocessing(all_five, element, data_info)
 
+
+    print len(all_five2)
     print "Number of starters with all five and more than 18 minutes played {}".format(len(all_five))
     pred = m.predict(dtrain)
 
     # Calculate residuals
-    print np.sum(pd.notnull(pred))
-    print np.sum(pd.notnull(all_five.FanDuelScore))
     all_five['R'] = pred - all_five.FanDuelScore
 
     # Add back 'Team' and 'Date' columns
     all_five['Date'] = remaining.Date
-    all_five['Team'] = remaining.Team
     all_five['Player'] = remaining.Player
-    all_five['LineupOrder'] = remaining.LineupOrder
-    all_five['PosMetric'] = remaining.PosMetric
+
+    # Merge
+    all_five2 = all_five2.merge(all_five, on = ['Player', 'Date', 'Position', 'BucketedMinutes'], how = 'left')
 
     # Dump to csv
-    all_five[['Player','Date','R','LineupOrder','Position','PosMetric']].to_csv('data/residuals.csv', index = False)
+    all_five2[['Player','Date','R','LineupOrder','Position','PosMetric', 'BucketedMinutes', 'Opp']].to_csv('data/residuals.csv', index = False)
 
 
 def add_lineup_position(df):
     num_games = len(df)/5
-    df.sort_values(['Position', 'PosMetric'])
+    df.sort_values(['Date', 'Team', 'Position', 'PosMetric'], inplace = True)
     df['LineupOrder'] = range(1,6) * num_games
     return df
 

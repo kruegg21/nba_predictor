@@ -312,8 +312,8 @@ if __name__ == "__main__":
                           minutes_cutoff = 3)
 
     param_grid = {
-                  'bst:max_depth':[3,4,5],
-    			  'bst:eta':[0.01, 0.005],
+                  'max_depth':[3,4,5],
+    			  'learning_rate':[0.01, 0.005],
     			  'silent':[1],
     			  'gamma':[0.1],
     			  'lambda':[0.1],
@@ -336,7 +336,7 @@ if __name__ == "__main__":
                                          element = 'FanDuelScore',
                                          data_info = data_info,
                                          param_grid = param_grid,
-                                         num_boost_round = 1000,
+                                         num_boost_round = 3000,
                                          early_stopping_rounds = 15,
                                          log_results = True)
 
