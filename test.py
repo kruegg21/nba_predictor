@@ -297,21 +297,27 @@ def add_player_position(df, data_info):
     element = 'FanDuelScore'
     m = load_pickled_model(element + 'GradientBoostedRegressor')
 
+    print "Total number of players {}".format(len(df))
+
     # Filter to only games with all five starters
     starters = df[df.GS == 1]
-    all_five = starters.groupby(['Team', 'Date']).filter(lambda x: len(x) == 5)
-    all_five = add_lineup_position(all_five)
 
-    print len(all_five)
+    print "Number of starters {}".format(len(starters))
+    all_five = starters.groupby(['Team', 'Date']).filter(lambda x: len(x) == 5)
+
+    print "Number of starters with all five {}".format(len(all_five))
+
+    all_five = add_lineup_position(all_five)
 
     # Calculate residuals for filtered dataset
     dtrain, all_five, remaining = xgboost_preprocessing(all_five, element, data_info)
+
+    print "Number of starters with all five and more than 18 minutes played {}".format(len(all_five))
     pred = m.predict(dtrain)
 
     # Calculate residuals
     print np.sum(pd.notnull(pred))
     print np.sum(pd.notnull(all_five.FanDuelScore))
-    raw_input()
     all_five['R'] = pred - all_five.FanDuelScore
 
     # Add back 'Team' and 'Date' columns

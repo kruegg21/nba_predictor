@@ -2,7 +2,7 @@ import xgboost
 import numpy as np
 import pandas as pd
 import time
-from helper import add_fantasy_score
+from helper import add_fantasy_score, timeit
 from datetime import datetime
 from itertools import product
 from read_write import load_pickled_model, dump_pickled_model
@@ -92,14 +92,6 @@ def xgboost_preprocessing(df, element, cv):
 
     return dtrain, df, remaining_features
 
-last_dict = {'colsample_bytree': 0.6,
-             'silent': 1,
-             'bst:max_depth': 5,
-             'subsample': 0.6,
-             'bst:eta': 0.01,
-             'gamma': 0.5,
-             'lambda': 0.5}
-
 def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
                         num_boost_round = 500, early_stopping_rounds = 50,
                         log_results = True):
@@ -127,47 +119,13 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
     keys, values = zip(*s)
     for i in product(*values):
         params = dict(zip(keys, i))
-
-        # Used if we want to restart a previously unfinshed search
-        passed_last = False
-        print params
-        if (params == last_dict) or passed_last:
-            passed_last = True
-
-            # Start time
-            ts = time.time()
-            if xgboost.__version__ == '0.6':
-                scores = xgboost.cv(params,
-                                    dtrain,
-                                    num_boost_round = num_boost_round,
-                                    nfold = data_info.splits,
-                                    early_stopping_rounds = early_stopping_rounds,
-                                    verbose_eval = True,
-                                    show_stdv = True,
-                                    seed = 100)
-            else:
-                scores = xgboost.cv(params,
-                                    dtrain,
-                                    num_boost_round = num_boost_round,
-                                    nfold = data_info.splits,
-                                    early_stopping_rounds = early_stopping_rounds,
-                                    show_progress = True,
-                                    show_stdv = True,
-                                    seed = 100)
-            score = np.min(scores['test-rmse-mean'])
-            iteration = scores['test-rmse-mean'].idxmin()
-            print "\n\n"
-            tt = time.time() - ts
-            print "Time to run model was {}".format(tt)
-            print scores
-            print params
-            print "\n\n"
-            with open('logs/{}test.txt'.format(element), 'a+') as f:
-                f.write("{} {}".format(params, tt))
-            if best_score > score:
-                best_score = score
-                best_params = params
-                best_iteration = iteration
+        s, i = grid_search_round(params, dtrain,
+                                 num_boost_round = num_boost_round,
+                                 early_stopping_rounds = early_stopping_rounds)
+        if best_score > s:
+            best_score = s
+            best_params = params
+            best_iteration = i
 
     if log_results:
         log_gradient_boosting_results(df,
@@ -178,6 +136,46 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
                                       param_grid,
                                       best_iteration,
                                       num_boost_round)
+
+@timeit
+def grid_search_round(params, dtrain, num_boost_round = 500,
+                      early_stopping_rounds = 50):
+    """
+    Inputs:
+        params -- dictionary of parameters
+        dtrain -- DMatrix of data to train on
+        num_boost_round -- int of number of boosting rounds
+        early_stopping_rounds -- int of early stopping rounds
+    Output:
+        score -- float of best score from round
+        iteration -- int of iteration that resulted in best score
+    """
+
+    if xgboost.__version__ == '0.6':
+        scores = xgboost.cv(params,
+                            dtrain,
+                            num_boost_round = num_boost_round,
+                            nfold = data_info.splits,
+                            early_stopping_rounds = early_stopping_rounds,
+                            verbose_eval = True,
+                            show_stdv = True,
+                            seed = 100)
+    else:
+        scores = xgboost.cv(params,
+                            dtrain,
+                            num_boost_round = num_boost_round,
+                            nfold = data_info.splits,
+                            early_stopping_rounds = early_stopping_rounds,
+                            show_progress = True,
+                            show_stdv = True,
+                            seed = 100)
+
+    # Display results
+    score = np.min(scores['test-rmse-mean'])
+    iteration = scores['test-rmse-mean'].idxmin()
+    print "\n\n{}\n{}\n\n".format(scores, params)
+    return score, iteration
+
 
 def train_xgboost(df, element = None, params = None,
                   data_info = None, num_boost_round = 500):
@@ -359,15 +357,3 @@ if __name__ == "__main__":
                       params = params,
                       data_info = data_info,
                       num_boost_round = 17)
-
-"""
-{'colsample_bytree': 0.6,
-'silent': 1,
-'bst:max_depth': 5,
-'subsample': 0.6,
-'bst:eta': 0.01,
-'gamma': 0.1,
-'lambda': 0.1}
-
-7.497501
-"""
