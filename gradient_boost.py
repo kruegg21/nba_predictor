@@ -314,13 +314,13 @@ if __name__ == "__main__":
                           minutes_cutoff = 3)
 
     param_grid = {
-                  'bst:max_depth':[5],
-    			  'bst:eta':[0.01],
+                  'bst:max_depth':[3,4,5],
+    			  'bst:eta':[0.01, 0.005],
     			  'silent':[1],
-    			  'gamma':[0.1, 0.3, 0.5],
-    			  'lambda':[0.1, 0.3, 0.5],
-    			  'subsample':[0.4, 0.5, 0.6],
-    			  'colsample_bytree':[0.6]
+    			  'gamma':[0.1],
+    			  'lambda':[0.1],
+    			  'subsample':[0.6],
+    			  'colsample_bytree':[0.5, 0.6, 0.7]
                  }
 
     if False:
@@ -338,8 +338,8 @@ if __name__ == "__main__":
                                          element = 'FanDuelScore',
                                          data_info = data_info,
                                          param_grid = param_grid,
-                                         num_boost_round = 500,
-                                         early_stopping_rounds = 10,
+                                         num_boost_round = 1000,
+                                         early_stopping_rounds = 15,
                                          log_results = True)
 
     if False:
