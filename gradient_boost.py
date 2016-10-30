@@ -313,7 +313,7 @@ if __name__ == "__main__":
 
     param_grid = {
                   'max_depth':[3,4,5],
-    			  'learning_rate':[0.01, 0.005],
+    			  'learning_rate':[0.1, 0.05],
     			  'silent':[1],
     			  'gamma':[0.1],
     			  'lambda':[0.1],
