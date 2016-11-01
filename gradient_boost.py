@@ -72,25 +72,30 @@ Code to transition from functional architecture to class architecture
 #                 self.best_score = score
 #                 self.best_params = params
 
-def xgboost_preprocessing(df, element, cv):
+def xgboost_preprocessing(df, element, cv, should_dump = True):
     # Select only features we need for particualr stat
     df = filter_training_set(df, cv)
-    df, remaining_features = select_features(df, element, should_dump = True)
+    filtered_df, remaining_df = select_features(df,
+                                                element,
+                                                should_dump = should_dump)
 
     # Create indepentent and dependent variable arrays
-    y_train = df.pop(element).values
-    X_train = df.values
+    y_train = filtered_df.pop(element).values
+    X_train = filtered_df.values
 
     # Create DMatrix
     dtrain = xgboost.DMatrix(X_train,
                              label=y_train,
                              missing = -999,
-                             feature_names = df.columns)
+                             feature_names = filtered_df.columns)
 
     # Add dependent variable back to df
-    df[element] = y_train
+    filtered_df[element] = y_train
 
-    return dtrain, df, remaining_features
+    # Combine all features (DataFrame is still filtered)
+    filtered_df = pd.concat([filtered_df, remaining_df], axis = 1)
+
+    return dtrain, filtered_df
 
 def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
                         num_boost_round = 500, early_stopping_rounds = 50,
@@ -108,7 +113,10 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
         None
     """
     # Processes Data
-    dtrain, df, _ = xgboost_preprocessing(df, element, data_info)
+    dtrain, filtered_df = xgboost_preprocessing(df,
+                                                element,
+                                                data_info,
+                                                should_dump = True)
 
     # Grid Search
     best_score = np.inf
@@ -183,7 +191,10 @@ def train_xgboost(df, element = None, params = None,
     Input:
     Output:
     """
-    dtrain, df, _ = xgboost_preprocessing(df, element, data_info)
+    dtrain, filtered_df = xgboost_preprocessing(df,
+                                                element,
+                                                data_info,
+                                                should_dump = False)
 
     model = xgboost.train(params,
                           dtrain,
@@ -192,13 +203,31 @@ def train_xgboost(df, element = None, params = None,
     # Dump model to pickle
     dump_pickled_model(model, '{}GradientBoostedRegressor'.format(element))
 
+def predict_xgboost(df, element = None, data_info = None, should_dump = True):
+    """
+    """
+    # Filter data
+    dtrain, filtered_df = xgboost_preprocessing(df,
+                                                element,
+                                                data_info,
+                                                should_dump = should_dump)
+
+    # Load model
+    m = load_pickled_model('{}GradientBoostedRegressor'.format(element))
+
+    # Predict
+    pred = m.predict(dtrain)
+
+    return pred, filtered_df
+
 def select_features(df, element, should_dump = True):
     """
     Input:
         df -- merged DataFrame with all features
         element -- string of the form 'PlayerStat'
     Output:
-        DataFrame of features we want
+        features -- DataFrame of features we want
+        remaining_features -- DataFrame of the remaining features
 
     Selects all columns that are involved in predicting a stat. This includes
     all columns with 'Stat' and 'Last' and the features in list

@@ -227,7 +227,7 @@ def optimal_lineup_test(df, column, cut_off, file_name, n_lineups):
 	# dump
 	bl.to_csv('data/' + file_name + '_best_linups.csv', index = False)
 
-def optimize_lineups(n_lineups = 100):
+def optimize_lineups(n_lineups = 100, ratio_cutoff = 0.7):
 	file_names = find_fd_filenames()
 	for f in file_names:
 		# Get data for slate
@@ -236,7 +236,7 @@ def optimize_lineups(n_lineups = 100):
 		# Filter columns we are intersted in
 		slate_df = slate_df[['Player', 'PlayerID', 'Id', 'Score', 'Variance',
 							 'Salary', 'Team', 'Position']]
-		optimal_lineup_test(slate_df, 'Score', 0.3, str(slate_id), n_lineups)
+		optimal_lineup_test(slate_df, 'Score', ratio_cutoff, str(slate_id), n_lineups)
 
 
 if __name__ == "__main__":

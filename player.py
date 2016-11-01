@@ -28,6 +28,9 @@ def build_basic_player_data(player_df):
     # Make Position Numeric
     make_position_numeric(player_df)
 
+    # Add Fantasy score
+    add_fantasy_score(player_df)
+
     # Minute adjusted stats
     add_player_per_minute_stats(player_df)
 

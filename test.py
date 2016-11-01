@@ -140,23 +140,37 @@ def train(should_scrape = True, should_dump = True, should_build = True,
         dump_merged_data(merged_df)
 
     # Train
-    train_model(merged_df)
+    train_model(merged_df, cv)
 
 
-def train_model(df):
-    # Get list of statistics we want to predict
-    prediction_statistics = ['Player' + stat for stat in main_stat_list_minus_minutes]
+def train_model(df, data_info = None):
+    # # Get list of statistics we want to predict
+    # prediction_statistics = ['Player' + stat for stat in main_stat_list_minus_minutes]
+    #
+    # # Build Random Forest for each statistic
+    # for element in prediction_statistics:
+    #     #train_random_forest(df, element)
 
-    # Build Random Forest for each statistic
-    for element in prediction_statistics:
-        train_random_forest(df, element)
-        # train_xgboost(element)
+    num_boost_round = 23
+    params = {
+        'colsample_bytree': 0.6,
+    	'silent': 1,
+    	'max_depth': 5,
+    	'subsample': 0.6,
+    	'learning_rate': 0.01,
+    	'gamma': 0.1,
+    	'lambda': 0.1
+    }
 
+    train_xgboost(df,
+                  element = 'FanDuelScore',
+                  params = params,
+                  data_info = data_info,
+                  num_boost_round = num_boost_round
+                  )
 
-
-
-
-def predict(should_scrape = True, should_dump = True, should_build = True):
+def predict(should_scrape = True, should_dump = True, should_build = True,
+            cv = None):
     # Read in full player DataFrame and determine what to scrape
     player_df = read_player_data()
     team_df = read_team_data()
@@ -214,32 +228,40 @@ def predict(should_scrape = True, should_dump = True, should_build = True):
         dump_prediction_data(prediction_df)
 
     # Make predictions
-    make_prediction(prediction_df)
+    make_prediction(prediction_df,
+                    data_info = cv,
+                    use_random_forest = False)
 
-def make_prediction(df):
-    # Get list of statistics we want to predict
-    prediction_statistics = ['Player' + stat for stat in main_stat_list_minus_minutes]
+def make_prediction(df, data_info = None, use_random_forest = False):
+    if use_random_forest:
+        # Get list of statistics we want to predict
+        prediction_statistics = ['Player' + stat for stat in main_stat_list_minus_minutes]
 
-    # Dictionary to weight scores based on FanDuel values
-    weighting_dictionary = {'PlayerAST': 1.5, 'PlayerPTS': 1, 'PlayerDRB': 1.2,
-                            'PlayerORB': 1.2, 'PlayerTOV': -1, 'PlayerSTL': 2,
-                            'PlayerBLK': 2}
+        # Dictionary to weight scores based on FanDuel values
+        weighting_dictionary = {'PlayerAST': 1.5, 'PlayerPTS': 1, 'PlayerDRB': 1.2,
+                                'PlayerORB': 1.2, 'PlayerTOV': -1, 'PlayerSTL': 2,
+                                'PlayerBLK': 2}
 
-    # Make predictions
-    score = np.zeros(len(df))
-    variance = np.zeros(len(df))
-    for stat in prediction_statistics:
-        # Get predictions and variance
-        prediction, variance = predict_random_forest(df, stat)
+        # Make predictions
+        score = np.zeros(len(df))
+        variance = np.zeros(len(df))
+        for stat in prediction_statistics:
+            # Get predictions and variance
+            prediction, variance = predict_random_forest(df, stat)
 
-        # Get weight of particular stat
-        weight = weighting_dictionary[stat]
+            # Get weight of particular stat
+            weight = weighting_dictionary[stat]
 
-        # Accumulate scores and variance
-        score = np.add(score, np.multiply(prediction, weight))
-        variance = np.add(variance, np.multiply(variance, int(weight**2)))
+            # Accumulate scores and variance
+            score = np.add(score, np.multiply(prediction, weight))
+            variance = np.add(variance, np.multiply(variance, int(weight**2)))
 
-        # predict_xgboost(df, element)
+    else:
+        score, _ = predict_xgboost(df,
+                                   'FanDuelScore',
+                                   data_info = data_info,
+                                   should_dump = True)
+        variance = 0
 
     # Create DataFrame with 'Player', 'PlayerID', 'Score', and 'Variance'
     predictions = pd.DataFrame(df[['Player', 'PlayerID']])
@@ -310,7 +332,7 @@ def add_player_position(df, data_info):
     all_five = add_lineup_position(all_five)
 
     # Calculate residuals for filtered dataset
-    dtrain, all_five, remaining = xgboost_preprocessing(all_five, element, data_info)
+    dtrain, filtered_all_five = xgboost_preprocessing(all_five, element, data_info)
 
     print "Number of starters with all five and more than 18 minutes played {}".format(len(all_five))
     pred = m.predict(dtrain)
@@ -343,24 +365,26 @@ if __name__ == "__main__":
 
     # # Train
     # train(should_scrape = False,
-    #       should_dump = True,
+    #       should_dump = False,
     #       should_build = True,
     #       should_train_linear_models = False,
     #       cv = cv)
-    from read_write import read_merged_data
-
-    data_info = cv_method(method = k_folds_cv,
-                          splits = 5,
-                          start_date = '1999-01-01',
-                          end_date = '2016-09-01',
-                          minutes_cutoff = 3)
-    df = read_merged_data()
-    add_player_position(df, data_info)
-
-    # # Predict
-    # predict(should_scrape = False,
-    #         should_dump = False,
-    #         should_build = True)
+    # from read_write import read_merged_data
     #
+    # data_info = cv_method(method = k_folds_cv,
+    #                       splits = 5,
+    #                       start_date = '1999-01-01',
+    #                       end_date = '2016-09-01',
+    #                       minutes_cutoff = 3)
+    # df = read_merged_data()
+    # add_player_position(df, data_info)
+
+    # # # Predict
+    predict(should_scrape = False,
+            should_dump = True,
+            should_build = True,
+            cv = cv)
+
     # # Pick optimal lineups
-    # optimize_lineups(n_lineups = 100)
+    optimize_lineups(n_lineups = 100,
+                     ratio_cutoff = 4)
