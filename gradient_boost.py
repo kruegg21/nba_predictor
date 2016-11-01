@@ -2,6 +2,8 @@ import xgboost
 import numpy as np
 import pandas as pd
 import time
+import copy
+from multiprocessing import Pool, cpu_count
 from helper import add_fantasy_score, timeit
 from datetime import datetime
 from itertools import product
@@ -94,6 +96,7 @@ def xgboost_preprocessing(df, element, cv, should_dump = True):
 
     # Combine all features (DataFrame is still filtered)
     filtered_df = pd.concat([filtered_df, remaining_df], axis = 1)
+    filtered_df.reset_index(inplace = True, drop = True)
 
     return dtrain, filtered_df
 
@@ -117,23 +120,34 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
                                                 element,
                                                 data_info,
                                                 should_dump = True)
+    dtrain.save_binary("data/train.buffer")
 
     # Grid Search
     best_score = np.inf
     best_params = {}
     best_iteration = num_boost_round
 
+
     s = sorted(param_grid.items())
     keys, values = zip(*s)
-    for i in product(*values):
-        params = dict(zip(keys, i))
-        s, i = grid_search_round(params, dtrain,
-                                 num_boost_round = num_boost_round,
-                                 early_stopping_rounds = early_stopping_rounds)
-        if best_score > s:
-            best_score = s
-            best_params = params
-            best_iteration = i
+
+    # Multiprocessing Grid Search
+    p = Pool(cpu_count())
+    arg_list = [(dict(zip(keys, i)), num_boost_round, early_stopping_rounds) for i in product(*values)]
+    print arg_list
+    raw_input()
+    results = p.map(parameter_wrapper, arg_list)
+    print results
+
+    # for i in product(*values):
+    #     params = dict(zip(keys, i))
+    #     s, i = grid_search_round(params, dtrain,
+    #                              num_boost_round = num_boost_round,
+    #                              early_stopping_rounds = early_stopping_rounds)
+    #     if best_score > s:
+    #         best_score = s
+    #         best_params = params
+    #         best_iteration = i
 
     if log_results:
         log_gradient_boosting_results(df,
@@ -145,8 +159,20 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
                                       best_iteration,
                                       num_boost_round)
 
+def parameter_wrapper(args):
+    """
+    Inputs:
+        args -- tuple of arguments
+    Output:
+        None
+
+    Unpacks the tuple of argument 'args' and passes them to
+    the function 'grid_search_round'
+    """
+    return grid_search_round(*args)
+
 @timeit
-def grid_search_round(params, dtrain, num_boost_round = 500,
+def grid_search_round(params, num_boost_round = 500,
                       early_stopping_rounds = 50):
     """
     Inputs:
@@ -158,7 +184,8 @@ def grid_search_round(params, dtrain, num_boost_round = 500,
         score -- float of best score from round
         iteration -- int of iteration that resulted in best score
     """
-
+    dtrain = xgboost.DMatrix("data/train.buffer")
+    print "Running search on {}".format(params)
     if xgboost.__version__ == '0.6':
         scores = xgboost.cv(params,
                             dtrain,
@@ -191,6 +218,7 @@ def train_xgboost(df, element = None, params = None,
     Input:
     Output:
     """
+    print "Training xgboost with {} rounds".format(num_boost_round)
     dtrain, filtered_df = xgboost_preprocessing(df,
                                                 element,
                                                 data_info,
@@ -341,8 +369,8 @@ if __name__ == "__main__":
                           minutes_cutoff = 3)
 
     param_grid = {
-                  'bst:max_depth':[3,4,5],
-    			  'bst:eta':[0.01, 0.005],
+                  'max_depth':[3,4,5],
+    			  'learning_rate':[1, 5],
     			  'silent':[1],
     			  'gamma':[0.1],
     			  'lambda':[0.1],
@@ -365,7 +393,7 @@ if __name__ == "__main__":
                                          element = 'FanDuelScore',
                                          data_info = data_info,
                                          param_grid = param_grid,
-                                         num_boost_round = 1000,
+                                         num_boost_round = 3000,
                                          early_stopping_rounds = 15,
                                          log_results = True)
 

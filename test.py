@@ -151,16 +151,16 @@ def train_model(df, data_info = None):
     # for element in prediction_statistics:
     #     #train_random_forest(df, element)
 
-    num_boost_round = 23
+    num_boost_round = 433
     params = {
-        'colsample_bytree': 0.6,
-    	'silent': 1,
-    	'max_depth': 5,
-    	'subsample': 0.6,
-    	'learning_rate': 0.01,
-    	'gamma': 0.1,
-    	'lambda': 0.1
-    }
+     'colsample_bytree': 0.6,
+     'silent': 1,
+     'learning_rate': 0.05,
+     'subsample': 0.6,
+     'max_depth': 5,
+     'gamma': 0.1,
+     'lambda': 0.1
+     }
 
     train_xgboost(df,
                   element = 'FanDuelScore',
@@ -363,7 +363,7 @@ if __name__ == "__main__":
     # Specifies cross validation technique to use for training
     cv = cv_method(k_folds_cv, 5, '1999-01-01', '2016-09-01', 3)
 
-    # # Train
+    # # # Train
     # train(should_scrape = False,
     #       should_dump = False,
     #       should_build = True,
@@ -379,12 +379,12 @@ if __name__ == "__main__":
     # df = read_merged_data()
     # add_player_position(df, data_info)
 
-    # # # Predict
-    predict(should_scrape = False,
-            should_dump = True,
-            should_build = True,
-            cv = cv)
+    # # # # Predict
+    # predict(should_scrape = False,
+    #         should_dump = True,
+    #         should_build = True,
+    #         cv = cv)
 
     # # Pick optimal lineups
     optimize_lineups(n_lineups = 100,
-                     ratio_cutoff = 4)
+                     ratio_cutoff = 0.3)
