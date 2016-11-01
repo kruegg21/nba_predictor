@@ -123,19 +123,17 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
     dtrain.save_binary("data/train.buffer")
 
     # Grid Search
-    best_score = np.inf
-    best_params = {}
-    best_iteration = num_boost_round
-
+    # best_score = np.inf
+    # best_params = {}
+    # best_iteration = num_boost_round
 
     s = sorted(param_grid.items())
     keys, values = zip(*s)
 
     # Multiprocessing Grid Search
     p = Pool(cpu_count())
-    arg_list = [(dict(zip(keys, i)), num_boost_round, early_stopping_rounds) for i in product(*values)]
-    print arg_list
-    raw_input()
+    arg_list = [(dict(zip(keys, i)), num_boost_round, early_stopping_rounds)
+                for i in product(*values)]
     results = p.map(parameter_wrapper, arg_list)
     print results
 
@@ -370,11 +368,11 @@ if __name__ == "__main__":
 
     param_grid = {
                   'max_depth':[3,4,5],
-    			  'learning_rate':[1, 5],
+    			  'learning_rate':[.1, .05],
     			  'silent':[1],
-    			  'gamma':[0.1],
-    			  'lambda':[0.1],
-    			  'subsample':[0.6],
+    			  'gamma':[0.1, 0.2],
+    			  'lambda':[0.1, 0.2],
+    			  'subsample':[0.6, 0.7, 0.8],
     			  'colsample_bytree':[0.5, 0.6, 0.7]
                  }
 
