@@ -2,6 +2,8 @@ import xgboost
 import numpy as np
 import pandas as pd
 import time
+import copy
+from multiprocessing import Pool, cpu_count
 from helper import add_fantasy_score, timeit
 from datetime import datetime
 from itertools import product
@@ -72,25 +74,31 @@ Code to transition from functional architecture to class architecture
 #                 self.best_score = score
 #                 self.best_params = params
 
-def xgboost_preprocessing(df, element, cv):
+def xgboost_preprocessing(df, element, cv, should_dump = True):
     # Select only features we need for particualr stat
     df = filter_training_set(df, cv)
-    df, remaining_features = select_features(df, element, should_dump = True)
+    filtered_df, remaining_df = select_features(df,
+                                                element,
+                                                should_dump = should_dump)
 
     # Create indepentent and dependent variable arrays
-    y_train = df.pop(element).values
-    X_train = df.values
+    y_train = filtered_df.pop(element).values
+    X_train = filtered_df.values
 
     # Create DMatrix
     dtrain = xgboost.DMatrix(X_train,
                              label=y_train,
                              missing = -999,
-                             feature_names = df.columns)
+                             feature_names = filtered_df.columns)
 
     # Add dependent variable back to df
-    df[element] = y_train
+    filtered_df[element] = y_train
 
-    return dtrain, df, remaining_features
+    # Combine all features (DataFrame is still filtered)
+    filtered_df = pd.concat([filtered_df, remaining_df], axis = 1)
+    filtered_df.reset_index(inplace = True, drop = True)
+
+    return dtrain, filtered_df
 
 def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
                         num_boost_round = 500, early_stopping_rounds = 50,
@@ -108,24 +116,36 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
         None
     """
     # Processes Data
-    dtrain, df, _ = xgboost_preprocessing(df, element, data_info)
+    dtrain, filtered_df = xgboost_preprocessing(df,
+                                                element,
+                                                data_info,
+                                                should_dump = True)
+    dtrain.save_binary("data/train.buffer")
 
     # Grid Search
-    best_score = np.inf
-    best_params = {}
-    best_iteration = num_boost_round
+    # best_score = np.inf
+    # best_params = {}
+    # best_iteration = num_boost_round
 
     s = sorted(param_grid.items())
     keys, values = zip(*s)
-    for i in product(*values):
-        params = dict(zip(keys, i))
-        s, i = grid_search_round(params, dtrain,
-                                 num_boost_round = num_boost_round,
-                                 early_stopping_rounds = early_stopping_rounds)
-        if best_score > s:
-            best_score = s
-            best_params = params
-            best_iteration = i
+
+    # Multiprocessing Grid Search
+    p = Pool(cpu_count())
+    arg_list = [(dict(zip(keys, i)), num_boost_round, early_stopping_rounds)
+                for i in product(*values)]
+    results = p.map(parameter_wrapper, arg_list)
+    print results
+
+    # for i in product(*values):
+    #     params = dict(zip(keys, i))
+    #     s, i = grid_search_round(params, dtrain,
+    #                              num_boost_round = num_boost_round,
+    #                              early_stopping_rounds = early_stopping_rounds)
+    #     if best_score > s:
+    #         best_score = s
+    #         best_params = params
+    #         best_iteration = i
 
     if log_results:
         log_gradient_boosting_results(df,
@@ -137,8 +157,20 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
                                       best_iteration,
                                       num_boost_round)
 
+def parameter_wrapper(args):
+    """
+    Inputs:
+        args -- tuple of arguments
+    Output:
+        None
+
+    Unpacks the tuple of argument 'args' and passes them to
+    the function 'grid_search_round'
+    """
+    return grid_search_round(*args)
+
 @timeit
-def grid_search_round(params, dtrain, num_boost_round = 500,
+def grid_search_round(params, num_boost_round = 500,
                       early_stopping_rounds = 50):
     """
     Inputs:
@@ -150,6 +182,7 @@ def grid_search_round(params, dtrain, num_boost_round = 500,
         score -- float of best score from round
         iteration -- int of iteration that resulted in best score
     """
+    dtrain = xgboost.DMatrix("data/train.buffer")
     print "Running search on {}".format(params)
     if xgboost.__version__ == '0.6':
         scores = xgboost.cv(params,
@@ -183,7 +216,11 @@ def train_xgboost(df, element = None, params = None,
     Input:
     Output:
     """
-    dtrain, df, _ = xgboost_preprocessing(df, element, data_info)
+    print "Training xgboost with {} rounds".format(num_boost_round)
+    dtrain, filtered_df = xgboost_preprocessing(df,
+                                                element,
+                                                data_info,
+                                                should_dump = False)
 
     model = xgboost.train(params,
                           dtrain,
@@ -192,13 +229,31 @@ def train_xgboost(df, element = None, params = None,
     # Dump model to pickle
     dump_pickled_model(model, '{}GradientBoostedRegressor'.format(element))
 
+def predict_xgboost(df, element = None, data_info = None, should_dump = True):
+    """
+    """
+    # Filter data
+    dtrain, filtered_df = xgboost_preprocessing(df,
+                                                element,
+                                                data_info,
+                                                should_dump = should_dump)
+
+    # Load model
+    m = load_pickled_model('{}GradientBoostedRegressor'.format(element))
+
+    # Predict
+    pred = m.predict(dtrain)
+
+    return pred, filtered_df
+
 def select_features(df, element, should_dump = True):
     """
     Input:
         df -- merged DataFrame with all features
         element -- string of the form 'PlayerStat'
     Output:
-        DataFrame of features we want
+        features -- DataFrame of features we want
+        remaining_features -- DataFrame of the remaining features
 
     Selects all columns that are involved in predicting a stat. This includes
     all columns with 'Stat' and 'Last' and the features in list
@@ -314,10 +369,11 @@ if __name__ == "__main__":
     param_grid = {
                   'max_depth':[3,4,5],
     			  'learning_rate':[0.1, 0.05],
+    			  'learning_rate':[.1, .05],
     			  'silent':[1],
-    			  'gamma':[0.1],
-    			  'lambda':[0.1],
-    			  'subsample':[0.6],
+    			  'gamma':[0.1, 0.2],
+    			  'lambda':[0.1, 0.2],
+    			  'subsample':[0.6, 0.7, 0.8],
     			  'colsample_bytree':[0.5, 0.6, 0.7]
                  }
 

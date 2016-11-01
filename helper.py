@@ -544,13 +544,29 @@ def add_rolling_averages(df, dictionary):
     """
     for key, value in dictionary.iteritems():
         for window in value:
+            # Name of new feature
+            name = 'Last' + str(window) + 'Average' + key
+
             # Drop column to prevent duplicates
-            if 'Last' + str(window) + 'Average' + key in df.columns:
-                df.pop('Last' + str(window) + 'Average' + key)
+            if name in df.columns:
+                df.pop(name)
 
             # Get rolling average
-            df['Last' + str(window) + 'Average' + key] = \
-                df[key].rolling(window = window).mean().shift(1)
+            df[name] = df[key].rolling(window = window).mean().shift(1)
+
+def add_exponential_smoothing(df, dictionary):
+    for key, value in dictionary.iteritems():
+        for window in value:
+            # Name of new feature
+            name = 'Last' + str(window) + 'ExponentialSmoothingAverage' + key
+
+            # Drop column to prevent duplicates
+            if name in df.columns:
+                df.pop(name)
+
+            # Get exponential smoothing rolling average
+            df[name] = pd.ewma(df[key], halflife = window).shift(1)
+
 
 def add_back_to_back(df):
     df['BackToBack'] = (df.Date + timedelta(days = 1)).shift(1) == df.Date
