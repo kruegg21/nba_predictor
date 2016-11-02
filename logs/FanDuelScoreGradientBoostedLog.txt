@@ -173,6 +173,8 @@ Train Set:
 Start date 1999-01-01, end date 2016-09-01, with 5 splits and                 bucketed minutes cutoff of 3
 
 Columns Used:
+<<<<<<< HEAD
+=======
 	BackToBack
 	BackToBackAway
 	BackToBackHome
@@ -676,6 +678,7 @@ Train Set:
 Start date 1999-01-01, end date 2016-09-01, with 5 splits and                 bucketed minutes cutoff of 3
 
 Columns Used:
+>>>>>>> 1c60c41fa03fc4852755ac872c64a3797b1b1af2
 	2P
 	2PA
 	3P
@@ -1016,5 +1019,6 @@ Best Parameters:
 	num_boost_round: 36/3000
 
 Best Score: 7.6259416
+>>>>>>> 1c60c41fa03fc4852755ac872c64a3797b1b1af2
 
 
