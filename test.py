@@ -151,16 +151,16 @@ def train_model(df, data_info = None):
     # for element in prediction_statistics:
     #     #train_random_forest(df, element)
 
-    num_boost_round = 433
+    num_boost_round = 739
     params = {
-     'colsample_bytree': 0.6,
-     'silent': 1,
-     'learning_rate': 0.05,
-     'subsample': 0.6,
-     'max_depth': 5,
-     'gamma': 0.1,
-     'lambda': 0.1
-     }
+                 'colsample_bytree': 0.6,
+                 'silent': 1,
+                 'learning_rate': 0.05,
+                 'subsample': 0.6,
+                 'max_depth': 4,
+                 'gamma': 0.1,
+                 'lambda': 0.1
+             }
 
     train_xgboost(df,
                   element = 'FanDuelScore',
@@ -332,30 +332,30 @@ def add_player_position(df, data_info):
     all_five = add_lineup_position(all_five)
 
     # Calculate residuals for filtered dataset
+    all_five2 = all_five.copy()
     dtrain, filtered_all_five = xgboost_preprocessing(all_five, element, data_info)
 
+    print len(all_five2)
     print "Number of starters with all five and more than 18 minutes played {}".format(len(all_five))
     pred = m.predict(dtrain)
 
     # Calculate residuals
-    print np.sum(pd.notnull(pred))
-    print np.sum(pd.notnull(all_five.FanDuelScore))
     all_five['R'] = pred - all_five.FanDuelScore
 
     # Add back 'Team' and 'Date' columns
     all_five['Date'] = remaining.Date
-    all_five['Team'] = remaining.Team
     all_five['Player'] = remaining.Player
-    all_five['LineupOrder'] = remaining.LineupOrder
-    all_five['PosMetric'] = remaining.PosMetric
+
+    # Merge
+    all_five2 = all_five2.merge(all_five, on = ['Player', 'Date', 'Position', 'BucketedMinutes'], how = 'left')
 
     # Dump to csv
-    all_five[['Player','Date','R','LineupOrder','Position','PosMetric']].to_csv('data/residuals.csv', index = False)
+    all_five2.to_csv('data/residuals.csv', index = False)
 
 
 def add_lineup_position(df):
     num_games = len(df)/5
-    df.sort_values(['Position', 'PosMetric'])
+    df.sort_values(['Date', 'Team', 'Position', 'PosMetric'], inplace = True)
     df['LineupOrder'] = range(1,6) * num_games
     return df
 

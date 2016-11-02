@@ -173,6 +173,512 @@ Train Set:
 Start date 1999-01-01, end date 2016-09-01, with 5 splits and                 bucketed minutes cutoff of 3
 
 Columns Used:
+<<<<<<< HEAD
+=======
+	BackToBack
+	BackToBackAway
+	BackToBackHome
+	BucketedMinutes
+	ChangedTeams
+	EstimatedPace
+	EstimatedPlayerPossessions
+	FanDuelScore
+	GS
+	Home
+	Last10AverageOppAllowedAST
+	Last10AverageOppAllowedBLK
+	Last10AverageOppAllowedDRB
+	Last10AverageOppAllowedORB
+	Last10AverageOppAllowedPTS
+	Last10AverageOppAllowedPTSPerPossession
+	Last10AverageOppAllowedSTL
+	Last10AverageOppForcedTOV
+	Last10AveragePlayerAST
+	Last10AveragePlayerASTPerMinute
+	Last10AveragePlayerASTPerPossession
+	Last10AveragePlayerBLK
+	Last10AveragePlayerBLKPerMinute
+	Last10AveragePlayerBLKPerPossession
+	Last10AveragePlayerDRB
+	Last10AveragePlayerDRBPerMinute
+	Last10AveragePlayerDRBPerPossession
+	Last10AveragePlayerORB
+	Last10AveragePlayerORBPerMinute
+	Last10AveragePlayerORBPerPossession
+	Last10AveragePlayerPTS
+	Last10AveragePlayerPTSPerMinute
+	Last10AveragePlayerPTSPerPossession
+	Last10AveragePlayerSTL
+	Last10AveragePlayerSTLPerMinute
+	Last10AveragePlayerSTLPerPossession
+	Last10AveragePlayerTOV
+	Last10AveragePlayerTOVPerMinute
+	Last10AveragePlayerTOVPerPossession
+	Last10PossessionMinuteAdjustedPlayerAST
+	Last10PossessionMinuteAdjustedPlayerBLK
+	Last10PossessionMinuteAdjustedPlayerDRB
+	Last10PossessionMinuteAdjustedPlayerORB
+	Last10PossessionMinuteAdjustedPlayerPTS
+	Last10PossessionMinuteAdjustedPlayerSTL
+	Last10PossessionMinuteAdjustedPlayerTOV
+	Last20AverageOppAllowedAST
+	Last20AverageOppAllowedBLK
+	Last20AverageOppAllowedDRB
+	Last20AverageOppAllowedORB
+	Last20AverageOppAllowedPTS
+	Last20AverageOppAllowedPTSPerPossession
+	Last20AverageOppAllowedSTL
+	Last20AverageOppForcedTOV
+	Last20AveragePlayerAST
+	Last20AveragePlayerASTPerMinute
+	Last20AveragePlayerASTPerPossession
+	Last20AveragePlayerBLK
+	Last20AveragePlayerBLKPerMinute
+	Last20AveragePlayerBLKPerPossession
+	Last20AveragePlayerDRB
+	Last20AveragePlayerDRBPerMinute
+	Last20AveragePlayerDRBPerPossession
+	Last20AveragePlayerORB
+	Last20AveragePlayerORBPerMinute
+	Last20AveragePlayerORBPerPossession
+	Last20AveragePlayerPTS
+	Last20AveragePlayerPTSPerMinute
+	Last20AveragePlayerPTSPerPossession
+	Last20AveragePlayerSTL
+	Last20AveragePlayerSTLPerMinute
+	Last20AveragePlayerSTLPerPossession
+	Last20AveragePlayerTOV
+	Last20AveragePlayerTOVPerMinute
+	Last20AveragePlayerTOVPerPossession
+	Last20PossessionMinuteAdjustedPlayerAST
+	Last20PossessionMinuteAdjustedPlayerBLK
+	Last20PossessionMinuteAdjustedPlayerDRB
+	Last20PossessionMinuteAdjustedPlayerORB
+	Last20PossessionMinuteAdjustedPlayerPTS
+	Last20PossessionMinuteAdjustedPlayerSTL
+	Last20PossessionMinuteAdjustedPlayerTOV
+	Last25AveragePlayerAST
+	Last25AveragePlayerASTPerMinute
+	Last25AveragePlayerBLK
+	Last25AveragePlayerBLKPerMinute
+	Last25AveragePlayerDRB
+	Last25AveragePlayerDRBPerMinute
+	Last25AveragePlayerORB
+	Last25AveragePlayerORBPerMinute
+	Last25AveragePlayerPTS
+	Last25AveragePlayerPTSPerMinute
+	Last25AveragePlayerSTL
+	Last25AveragePlayerSTLPerMinute
+	Last25AveragePlayerTOV
+	Last25AveragePlayerTOVPerMinute
+	Last5AverageOppAllowedAST
+	Last5AverageOppAllowedBLK
+	Last5AverageOppAllowedDRB
+	Last5AverageOppAllowedORB
+	Last5AverageOppAllowedPTS
+	Last5AverageOppAllowedPTSPerPossession
+	Last5AverageOppAllowedSTL
+	Last5AverageOppForcedTOV
+	Last5AveragePlayerAST
+	Last5AveragePlayerASTPerMinute
+	Last5AveragePlayerASTPerPossession
+	Last5AveragePlayerBLK
+	Last5AveragePlayerBLKPerMinute
+	Last5AveragePlayerBLKPerPossession
+	Last5AveragePlayerDRB
+	Last5AveragePlayerDRBPerMinute
+	Last5AveragePlayerDRBPerPossession
+	Last5AveragePlayerORB
+	Last5AveragePlayerORBPerMinute
+	Last5AveragePlayerORBPerPossession
+	Last5AveragePlayerPTS
+	Last5AveragePlayerPTSPerMinute
+	Last5AveragePlayerPTSPerPossession
+	Last5AveragePlayerSTL
+	Last5AveragePlayerSTLPerMinute
+	Last5AveragePlayerSTLPerPossession
+	Last5AveragePlayerTOV
+	Last5AveragePlayerTOVPerMinute
+	Last5AveragePlayerTOVPerPossession
+	Last5PossessionMinuteAdjustedPlayerAST
+	Last5PossessionMinuteAdjustedPlayerBLK
+	Last5PossessionMinuteAdjustedPlayerDRB
+	Last5PossessionMinuteAdjustedPlayerORB
+	Last5PossessionMinuteAdjustedPlayerPTS
+	Last5PossessionMinuteAdjustedPlayerSTL
+	Last5PossessionMinuteAdjustedPlayerTOV
+	PlayerGameNumber
+	PlayerSeasonGameNumber
+	Position
+	PossessionMinuteAdjustedPlayerAST
+	PossessionMinuteAdjustedPlayerBLK
+	PossessionMinuteAdjustedPlayerDRB
+	PossessionMinuteAdjustedPlayerORB
+	PossessionMinuteAdjustedPlayerPTS
+	PossessionMinuteAdjustedPlayerSTL
+	PossessionMinuteAdjustedPlayerTOV
+
+Parameter Grid:
+	colsample_bytree: [0.5, 0.6, 0.7]
+	silent: [1]
+	bst:max_depth: [3, 4, 5]
+	subsample: [0.6]
+	bst:eta: [0.01, 0.005]
+	gamma: [0.1]
+	lambda: [0.1]
+
+Best Parameters:
+	num_boost_round: 1000/1000
+
+Best Score: inf
+
+
+----------------------------------------
+Train Set:
+Start date 1999-01-01, end date 2016-09-01, with 5 splits and                 bucketed minutes cutoff of 3
+
+Columns Used:
+	BackToBack
+	BackToBackAway
+	BackToBackHome
+	BucketedMinutes
+	ChangedTeams
+	EstimatedPace
+	EstimatedPlayerPossessions
+	FanDuelScore
+	GS
+	Home
+	Last10AverageOppAllowedAST
+	Last10AverageOppAllowedBLK
+	Last10AverageOppAllowedDRB
+	Last10AverageOppAllowedORB
+	Last10AverageOppAllowedPTS
+	Last10AverageOppAllowedPTSPerPossession
+	Last10AverageOppAllowedSTL
+	Last10AverageOppForcedTOV
+	Last10AveragePlayerAST
+	Last10AveragePlayerASTPerMinute
+	Last10AveragePlayerASTPerPossession
+	Last10AveragePlayerBLK
+	Last10AveragePlayerBLKPerMinute
+	Last10AveragePlayerBLKPerPossession
+	Last10AveragePlayerDRB
+	Last10AveragePlayerDRBPerMinute
+	Last10AveragePlayerDRBPerPossession
+	Last10AveragePlayerORB
+	Last10AveragePlayerORBPerMinute
+	Last10AveragePlayerORBPerPossession
+	Last10AveragePlayerPTS
+	Last10AveragePlayerPTSPerMinute
+	Last10AveragePlayerPTSPerPossession
+	Last10AveragePlayerSTL
+	Last10AveragePlayerSTLPerMinute
+	Last10AveragePlayerSTLPerPossession
+	Last10AveragePlayerTOV
+	Last10AveragePlayerTOVPerMinute
+	Last10AveragePlayerTOVPerPossession
+	Last10PossessionMinuteAdjustedPlayerAST
+	Last10PossessionMinuteAdjustedPlayerBLK
+	Last10PossessionMinuteAdjustedPlayerDRB
+	Last10PossessionMinuteAdjustedPlayerORB
+	Last10PossessionMinuteAdjustedPlayerPTS
+	Last10PossessionMinuteAdjustedPlayerSTL
+	Last10PossessionMinuteAdjustedPlayerTOV
+	Last20AverageOppAllowedAST
+	Last20AverageOppAllowedBLK
+	Last20AverageOppAllowedDRB
+	Last20AverageOppAllowedORB
+	Last20AverageOppAllowedPTS
+	Last20AverageOppAllowedPTSPerPossession
+	Last20AverageOppAllowedSTL
+	Last20AverageOppForcedTOV
+	Last20AveragePlayerAST
+	Last20AveragePlayerASTPerMinute
+	Last20AveragePlayerASTPerPossession
+	Last20AveragePlayerBLK
+	Last20AveragePlayerBLKPerMinute
+	Last20AveragePlayerBLKPerPossession
+	Last20AveragePlayerDRB
+	Last20AveragePlayerDRBPerMinute
+	Last20AveragePlayerDRBPerPossession
+	Last20AveragePlayerORB
+	Last20AveragePlayerORBPerMinute
+	Last20AveragePlayerORBPerPossession
+	Last20AveragePlayerPTS
+	Last20AveragePlayerPTSPerMinute
+	Last20AveragePlayerPTSPerPossession
+	Last20AveragePlayerSTL
+	Last20AveragePlayerSTLPerMinute
+	Last20AveragePlayerSTLPerPossession
+	Last20AveragePlayerTOV
+	Last20AveragePlayerTOVPerMinute
+	Last20AveragePlayerTOVPerPossession
+	Last20PossessionMinuteAdjustedPlayerAST
+	Last20PossessionMinuteAdjustedPlayerBLK
+	Last20PossessionMinuteAdjustedPlayerDRB
+	Last20PossessionMinuteAdjustedPlayerORB
+	Last20PossessionMinuteAdjustedPlayerPTS
+	Last20PossessionMinuteAdjustedPlayerSTL
+	Last20PossessionMinuteAdjustedPlayerTOV
+	Last25AveragePlayerAST
+	Last25AveragePlayerASTPerMinute
+	Last25AveragePlayerBLK
+	Last25AveragePlayerBLKPerMinute
+	Last25AveragePlayerDRB
+	Last25AveragePlayerDRBPerMinute
+	Last25AveragePlayerORB
+	Last25AveragePlayerORBPerMinute
+	Last25AveragePlayerPTS
+	Last25AveragePlayerPTSPerMinute
+	Last25AveragePlayerSTL
+	Last25AveragePlayerSTLPerMinute
+	Last25AveragePlayerTOV
+	Last25AveragePlayerTOVPerMinute
+	Last5AverageOppAllowedAST
+	Last5AverageOppAllowedBLK
+	Last5AverageOppAllowedDRB
+	Last5AverageOppAllowedORB
+	Last5AverageOppAllowedPTS
+	Last5AverageOppAllowedPTSPerPossession
+	Last5AverageOppAllowedSTL
+	Last5AverageOppForcedTOV
+	Last5AveragePlayerAST
+	Last5AveragePlayerASTPerMinute
+	Last5AveragePlayerASTPerPossession
+	Last5AveragePlayerBLK
+	Last5AveragePlayerBLKPerMinute
+	Last5AveragePlayerBLKPerPossession
+	Last5AveragePlayerDRB
+	Last5AveragePlayerDRBPerMinute
+	Last5AveragePlayerDRBPerPossession
+	Last5AveragePlayerORB
+	Last5AveragePlayerORBPerMinute
+	Last5AveragePlayerORBPerPossession
+	Last5AveragePlayerPTS
+	Last5AveragePlayerPTSPerMinute
+	Last5AveragePlayerPTSPerPossession
+	Last5AveragePlayerSTL
+	Last5AveragePlayerSTLPerMinute
+	Last5AveragePlayerSTLPerPossession
+	Last5AveragePlayerTOV
+	Last5AveragePlayerTOVPerMinute
+	Last5AveragePlayerTOVPerPossession
+	Last5PossessionMinuteAdjustedPlayerAST
+	Last5PossessionMinuteAdjustedPlayerBLK
+	Last5PossessionMinuteAdjustedPlayerDRB
+	Last5PossessionMinuteAdjustedPlayerORB
+	Last5PossessionMinuteAdjustedPlayerPTS
+	Last5PossessionMinuteAdjustedPlayerSTL
+	Last5PossessionMinuteAdjustedPlayerTOV
+	PlayerGameNumber
+	PlayerSeasonGameNumber
+	Position
+	PossessionMinuteAdjustedPlayerAST
+	PossessionMinuteAdjustedPlayerBLK
+	PossessionMinuteAdjustedPlayerDRB
+	PossessionMinuteAdjustedPlayerORB
+	PossessionMinuteAdjustedPlayerPTS
+	PossessionMinuteAdjustedPlayerSTL
+	PossessionMinuteAdjustedPlayerTOV
+
+Parameter Grid:
+	colsample_bytree: [0.5, 0.6, 0.7]
+	silent: [1]
+	bst:max_depth: [3, 4, 5]
+	subsample: [0.6]
+	bst:eta: [0.01, 0.005]
+	gamma: [0.1]
+	lambda: [0.1]
+
+Best Parameters:
+	colsample_bytree: 0.6
+	silent: 1
+	bst:max_depth: 3
+	subsample: 0.6
+	bst:eta: 0.01
+	gamma: 0.1
+	lambda: 0.1
+	num_boost_round: 23/1000
+
+Best Score: 7.4975012
+
+
+----------------------------------------
+Train Set:
+Start date 1999-01-01, end date 2016-09-01, with 5 splits and                 bucketed minutes cutoff of 3
+
+Columns Used:
+	BackToBack
+	BackToBackAway
+	BackToBackHome
+	BucketedMinutes
+	ChangedTeams
+	EstimatedPace
+	EstimatedPlayerPossessions
+	FanDuelScore
+	GS
+	Home
+	Last10AverageOppAllowedAST
+	Last10AverageOppAllowedBLK
+	Last10AverageOppAllowedDRB
+	Last10AverageOppAllowedORB
+	Last10AverageOppAllowedPTS
+	Last10AverageOppAllowedPTSPerPossession
+	Last10AverageOppAllowedSTL
+	Last10AverageOppForcedTOV
+	Last10AveragePlayerAST
+	Last10AveragePlayerASTPerMinute
+	Last10AveragePlayerASTPerPossession
+	Last10AveragePlayerBLK
+	Last10AveragePlayerBLKPerMinute
+	Last10AveragePlayerBLKPerPossession
+	Last10AveragePlayerDRB
+	Last10AveragePlayerDRBPerMinute
+	Last10AveragePlayerDRBPerPossession
+	Last10AveragePlayerORB
+	Last10AveragePlayerORBPerMinute
+	Last10AveragePlayerORBPerPossession
+	Last10AveragePlayerPTS
+	Last10AveragePlayerPTSPerMinute
+	Last10AveragePlayerPTSPerPossession
+	Last10AveragePlayerSTL
+	Last10AveragePlayerSTLPerMinute
+	Last10AveragePlayerSTLPerPossession
+	Last10AveragePlayerTOV
+	Last10AveragePlayerTOVPerMinute
+	Last10AveragePlayerTOVPerPossession
+	Last10PossessionMinuteAdjustedPlayerAST
+	Last10PossessionMinuteAdjustedPlayerBLK
+	Last10PossessionMinuteAdjustedPlayerDRB
+	Last10PossessionMinuteAdjustedPlayerORB
+	Last10PossessionMinuteAdjustedPlayerPTS
+	Last10PossessionMinuteAdjustedPlayerSTL
+	Last10PossessionMinuteAdjustedPlayerTOV
+	Last20AverageOppAllowedAST
+	Last20AverageOppAllowedBLK
+	Last20AverageOppAllowedDRB
+	Last20AverageOppAllowedORB
+	Last20AverageOppAllowedPTS
+	Last20AverageOppAllowedPTSPerPossession
+	Last20AverageOppAllowedSTL
+	Last20AverageOppForcedTOV
+	Last20AveragePlayerAST
+	Last20AveragePlayerASTPerMinute
+	Last20AveragePlayerASTPerPossession
+	Last20AveragePlayerBLK
+	Last20AveragePlayerBLKPerMinute
+	Last20AveragePlayerBLKPerPossession
+	Last20AveragePlayerDRB
+	Last20AveragePlayerDRBPerMinute
+	Last20AveragePlayerDRBPerPossession
+	Last20AveragePlayerORB
+	Last20AveragePlayerORBPerMinute
+	Last20AveragePlayerORBPerPossession
+	Last20AveragePlayerPTS
+	Last20AveragePlayerPTSPerMinute
+	Last20AveragePlayerPTSPerPossession
+	Last20AveragePlayerSTL
+	Last20AveragePlayerSTLPerMinute
+	Last20AveragePlayerSTLPerPossession
+	Last20AveragePlayerTOV
+	Last20AveragePlayerTOVPerMinute
+	Last20AveragePlayerTOVPerPossession
+	Last20PossessionMinuteAdjustedPlayerAST
+	Last20PossessionMinuteAdjustedPlayerBLK
+	Last20PossessionMinuteAdjustedPlayerDRB
+	Last20PossessionMinuteAdjustedPlayerORB
+	Last20PossessionMinuteAdjustedPlayerPTS
+	Last20PossessionMinuteAdjustedPlayerSTL
+	Last20PossessionMinuteAdjustedPlayerTOV
+	Last25AveragePlayerAST
+	Last25AveragePlayerASTPerMinute
+	Last25AveragePlayerBLK
+	Last25AveragePlayerBLKPerMinute
+	Last25AveragePlayerDRB
+	Last25AveragePlayerDRBPerMinute
+	Last25AveragePlayerORB
+	Last25AveragePlayerORBPerMinute
+	Last25AveragePlayerPTS
+	Last25AveragePlayerPTSPerMinute
+	Last25AveragePlayerSTL
+	Last25AveragePlayerSTLPerMinute
+	Last25AveragePlayerTOV
+	Last25AveragePlayerTOVPerMinute
+	Last5AverageOppAllowedAST
+	Last5AverageOppAllowedBLK
+	Last5AverageOppAllowedDRB
+	Last5AverageOppAllowedORB
+	Last5AverageOppAllowedPTS
+	Last5AverageOppAllowedPTSPerPossession
+	Last5AverageOppAllowedSTL
+	Last5AverageOppForcedTOV
+	Last5AveragePlayerAST
+	Last5AveragePlayerASTPerMinute
+	Last5AveragePlayerASTPerPossession
+	Last5AveragePlayerBLK
+	Last5AveragePlayerBLKPerMinute
+	Last5AveragePlayerBLKPerPossession
+	Last5AveragePlayerDRB
+	Last5AveragePlayerDRBPerMinute
+	Last5AveragePlayerDRBPerPossession
+	Last5AveragePlayerORB
+	Last5AveragePlayerORBPerMinute
+	Last5AveragePlayerORBPerPossession
+	Last5AveragePlayerPTS
+	Last5AveragePlayerPTSPerMinute
+	Last5AveragePlayerPTSPerPossession
+	Last5AveragePlayerSTL
+	Last5AveragePlayerSTLPerMinute
+	Last5AveragePlayerSTLPerPossession
+	Last5AveragePlayerTOV
+	Last5AveragePlayerTOVPerMinute
+	Last5AveragePlayerTOVPerPossession
+	Last5PossessionMinuteAdjustedPlayerAST
+	Last5PossessionMinuteAdjustedPlayerBLK
+	Last5PossessionMinuteAdjustedPlayerDRB
+	Last5PossessionMinuteAdjustedPlayerORB
+	Last5PossessionMinuteAdjustedPlayerPTS
+	Last5PossessionMinuteAdjustedPlayerSTL
+	Last5PossessionMinuteAdjustedPlayerTOV
+	PlayerGameNumber
+	PlayerSeasonGameNumber
+	Position
+	PossessionMinuteAdjustedPlayerAST
+	PossessionMinuteAdjustedPlayerBLK
+	PossessionMinuteAdjustedPlayerDRB
+	PossessionMinuteAdjustedPlayerORB
+	PossessionMinuteAdjustedPlayerPTS
+	PossessionMinuteAdjustedPlayerSTL
+	PossessionMinuteAdjustedPlayerTOV
+
+Parameter Grid:
+	colsample_bytree: [0.5, 0.6, 0.7]
+	silent: [1]
+	learning_rate: [0.1, 0.05]
+	subsample: [0.6]
+	max_depth: [3, 4, 5]
+	gamma: [0.1]
+	lambda: [0.1]
+
+Best Parameters:
+	colsample_bytree: 0.6
+	silent: 1
+	learning_rate: 0.05
+	subsample: 0.6
+	max_depth: 4
+	gamma: 0.1
+	lambda: 0.1
+	num_boost_round: 739/3000
+
+Best Score: 7.4194612
+
+
+----------------------------------------
+Train Set:
+Start date 1999-01-01, end date 2016-09-01, with 5 splits and                 bucketed minutes cutoff of 3
+
+Columns Used:
+>>>>>>> 1c60c41fa03fc4852755ac872c64a3797b1b1af2
 	2P
 	2PA
 	3P
@@ -494,17 +1000,25 @@ Columns Used:
 	Won
 
 Parameter Grid:
-	colsample_bytree: [0.5, 0.6, 0.7]
+	colsample_bytree: [0.6]
 	silent: [1]
-	learning_rate: [1, 5]
-	subsample: [0.6]
-	max_depth: [3, 4, 5]
-	gamma: [0.1]
-	lambda: [0.1]
+	learning_rate: [1]
+	subsample: [0.5, 0.6, 0.7]
+	max_depth: [4]
+	gamma: [0.1, 0.2]
+	lambda: [0.1, 0.2]
 
 Best Parameters:
-	num_boost_round: 3000/3000
+	colsample_bytree: 0.6
+	silent: 1
+	learning_rate: 1
+	subsample: 0.5
+	max_depth: 4
+	gamma: 0.2
+	lambda: 0.1
+	num_boost_round: 36/3000
 
-Best Score: inf
+Best Score: 7.6259416
+>>>>>>> 1c60c41fa03fc4852755ac872c64a3797b1b1af2
 
 
