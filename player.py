@@ -31,6 +31,9 @@ def build_basic_player_data(player_df):
     # Add Fantasy score
     add_fantasy_score(player_df)
 
+    # Add field goal percentage
+    add_fg_percentage(player_df)
+
     # Minute adjusted stats
     add_player_per_minute_stats(player_df)
 

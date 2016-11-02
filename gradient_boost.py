@@ -226,11 +226,15 @@ def train_xgboost(df, element = None, params = None,
     Input:
     Output:
     """
-    print "Training xgboost with {} rounds".format(num_boost_round)
     dtrain, filtered_df, column_names = xgboost_preprocessing(df,
                                                               element,
                                                               data_info,
                                                               should_dump = False)
+
+    print "Training xgboost with {} rounds".format(num_boost_round)
+    print "On features :"
+    for column in column_names:
+        print "{}".format(column)
 
     model = xgboost.train(params,
                           dtrain,
@@ -272,10 +276,12 @@ def select_features(df, element, should_dump = True):
     """
     if element[:6] == 'Player':
         features_list = get_relevent_columns(df, element) + [element] + basic_features
+        features_list += get_extra_columns(df)
     else:
         features_list = []
         for stat in main_stat_list_minus_minutes:
             features_list += get_relevent_columns(df, stat)
+        features_list += get_extra_columns(df)
         features_list += [element]
         features_list += basic_features
 
@@ -296,6 +302,14 @@ def select_features(df, element, should_dump = True):
         features[column] = features[column].astype(float)
 
     return features, remaining_features
+
+def get_extra_columns(df):
+    p = set([column for column in df.columns if 'Last' in column])
+    for element in main_stat_list_minus_minutes:
+        p -= set([column for column in df.columns if (element[-3:] in column)
+                    and (('Last' in column) or ('Adjusted' in column))])
+    return list(p)
+
 
 def get_relevent_columns(df, element):
     """

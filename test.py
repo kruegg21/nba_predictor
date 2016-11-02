@@ -70,17 +70,17 @@ def build_merged_data(player_df, team_df, train = True):
                                                svr = False,
                                                train = train)
 
-        # Iterate through each window and find the one the best correlation
-        for window in value:
-            # Determine name of our estimator feature
-            feature_name = 'Last' + str(window) + 'PossessionMinuteAdjusted' + key[:9]
-
-            merged_df[feature_name] = \
-                merged_df['Last' + str(window) + 'Average' + key] * \
-                merged_df.EstimatedPlayerPossessions
-
-            # Determine which rows are not NaN for our estimator feature and feature
-            good_indices = pd.notnull(merged_df[feature_name]) & pd.notnull(merged_df[key[:9]])
+        # # Iterate through each window and find the one the best correlation
+        # for window in value:
+        #     # Determine name of our estimator feature
+        #     feature_name = 'Last' + str(window) + 'PossessionMinuteAdjusted' + key[:9]
+        #
+        #     merged_df[feature_name] = \
+        #         merged_df['Last' + str(window) + 'Average' + key] * \
+        #         merged_df.EstimatedPlayerPossessions
+        #
+        #     # Determine which rows are not NaN for our estimator feature and feature
+        #     good_indices = pd.notnull(merged_df[feature_name]) & pd.notnull(merged_df[key[:9]])
     return merged_df
 
 
@@ -363,12 +363,12 @@ if __name__ == "__main__":
     # Specifies cross validation technique to use for training
     cv = cv_method(k_folds_cv, 5, '1999-01-01', '2016-09-01', 3)
 
-    # # # Train
-    # train(should_scrape = False,
-    #       should_dump = False,
-    #       should_build = True,
-    #       should_train_linear_models = False,
-    #       cv = cv)
+    # Train
+    train(should_scrape = False,
+          should_dump = False,
+          should_build = False,
+          should_train_linear_models = False,
+          cv = cv)
     # from read_write import read_merged_data
     #
     # data_info = cv_method(method = k_folds_cv,
@@ -386,5 +386,5 @@ if __name__ == "__main__":
     #         cv = cv)
 
     # # Pick optimal lineups
-    optimize_lineups(n_lineups = 100,
-                     ratio_cutoff = 0.3)
+    # optimize_lineups(n_lineups = 100,
+    #                  ratio_cutoff = 0.3)

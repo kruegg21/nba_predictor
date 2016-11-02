@@ -22,7 +22,8 @@ opponent_possession_adjusted_stats_list = opp_stat_list
 
 player_rolling_mean_stat_dict = \
     dict([('Player' + stat, [5,10,20,23,25,30]) for stat in main_stat_list] + \
-    [('Player' + stat + 'PerMinute', [5,10,20,23,25,30]) for stat in main_stat_list_minus_minutes])
+    [('Player' + stat + 'PerMinute', [5,10,20,23,25,30]) for stat in main_stat_list_minus_minutes] + \
+    [('PlayerFG%', [15,20,25])])
 
 player_post_merge_rolling_mean_stat_dict = \
     dict([('Player' + stat + 'PerPossession', [5,10,20]) \

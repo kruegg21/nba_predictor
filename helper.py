@@ -480,6 +480,9 @@ def add_possessions_played(df):
     """
     df['PlayerPossessionsPlayed'] = (df.PlayerMP / (df.TeamMP / 5)) * df.Possessions
 
+def add_fg_percentage(df):
+    df['PlayerFG%'] = (df.FG + 1) / (df.FGA + 1)
+
 def add_pace(df):
     """
     Pace normalizes possessions to possessions per 48
