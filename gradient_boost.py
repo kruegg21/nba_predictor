@@ -134,6 +134,7 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
     p = Pool(cpu_count())
     arg_list = [(dict(zip(keys, i)), num_boost_round, early_stopping_rounds)
                 for i in product(*values)]
+    results = p.map(parameter_wrapper, arg_list)
     print results
 
     for trial in zip(results, arg_list):
