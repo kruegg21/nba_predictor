@@ -151,16 +151,16 @@ def train_model(df, data_info = None):
     # for element in prediction_statistics:
     #     #train_random_forest(df, element)
 
-    num_boost_round = 433
+    num_boost_round = 739
     params = {
-     'colsample_bytree': 0.6,
-     'silent': 1,
-     'learning_rate': 0.05,
-     'subsample': 0.6,
-     'max_depth': 5,
-     'gamma': 0.1,
-     'lambda': 0.1
-     }
+                 'colsample_bytree': 0.6,
+                 'silent': 1,
+                 'learning_rate': 0.05,
+                 'subsample': 0.6,
+                 'max_depth': 4,
+                 'gamma': 0.1,
+                 'lambda': 0.1
+             }
 
     train_xgboost(df,
                   element = 'FanDuelScore',

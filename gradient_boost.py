@@ -115,7 +115,7 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
     Output:
         None
     """
-    # Processes Data
+    # # Processes Data
     dtrain, filtered_df = xgboost_preprocessing(df,
                                                 element,
                                                 data_info,
@@ -123,9 +123,9 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
     dtrain.save_binary("data/train.buffer")
 
     # Grid Search
-    # best_score = np.inf
-    # best_params = {}
-    # best_iteration = num_boost_round
+    best_score = np.inf
+    best_params = {}
+    best_iteration = num_boost_round
 
     s = sorted(param_grid.items())
     keys, values = zip(*s)
@@ -134,8 +134,16 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
     p = Pool(cpu_count())
     arg_list = [(dict(zip(keys, i)), num_boost_round, early_stopping_rounds)
                 for i in product(*values)]
-    results = p.map(parameter_wrapper, arg_list)
     print results
+
+    for trial in zip(results, arg_list):
+        s = trial[0][0]
+        i = trial[0][1]
+        params = trial[1][0]
+        if best_score > s:
+            best_score = s
+            best_params = params
+            best_iteration = i
 
     # for i in product(*values):
     #     params = dict(zip(keys, i))
@@ -148,7 +156,7 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
     #         best_iteration = i
 
     if log_results:
-        log_gradient_boosting_results(df,
+        log_gradient_boosting_results(filtered_df,
                                       best_score,
                                       best_params,
                                       element,
@@ -367,14 +375,13 @@ if __name__ == "__main__":
                           minutes_cutoff = 3)
 
     param_grid = {
-                  'max_depth':[3,4,5],
-    			  'learning_rate':[0.1, 0.05],
-    			  'learning_rate':[.1, .05],
+                  'max_depth':[4],
+    			  'learning_rate':[1],
     			  'silent':[1],
     			  'gamma':[0.1, 0.2],
     			  'lambda':[0.1, 0.2],
-    			  'subsample':[0.6, 0.7, 0.8],
-    			  'colsample_bytree':[0.5, 0.6, 0.7]
+    			  'subsample':[0.5, 0.6, 0.7],
+    			  'colsample_bytree':[0.6]
                  }
 
     if False:
@@ -393,7 +400,7 @@ if __name__ == "__main__":
                                          data_info = data_info,
                                          param_grid = param_grid,
                                          num_boost_round = 3000,
-                                         early_stopping_rounds = 15,
+                                         early_stopping_rounds = 50,
                                          log_results = True)
 
     if False:
