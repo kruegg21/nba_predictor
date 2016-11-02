@@ -392,10 +392,10 @@ if __name__ == "__main__":
 
     param_grid = {
                   'max_depth':[4],
-    			  'learning_rate':[1],
+    			  'learning_rate':[0.05],
     			  'silent':[1],
-    			  'gamma':[0.1],
-    			  'lambda':[0.1],
+    			  'gamma':[0.1, 0.15],
+    			  'lambda':[0.1, 0.15],
     			  'subsample':[0.5, 0.6, 0.7],
     			  'colsample_bytree':[0.6]
                  }
