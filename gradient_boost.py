@@ -95,10 +95,11 @@ def xgboost_preprocessing(df, element, cv, should_dump = True):
     filtered_df[element] = y_train
 
     # Combine all features (DataFrame is still filtered)
+    column_names = filtered_df.columns
     filtered_df = pd.concat([filtered_df, remaining_df], axis = 1)
     filtered_df.reset_index(inplace = True, drop = True)
 
-    return dtrain, filtered_df
+    return dtrain, filtered_df, column_names
 
 def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
                         num_boost_round = 500, early_stopping_rounds = 50,
@@ -116,7 +117,7 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
         None
     """
     # # Processes Data
-    dtrain, filtered_df = xgboost_preprocessing(df,
+    dtrain, filtered_df, column_names = xgboost_preprocessing(df,
                                                 element,
                                                 data_info,
                                                 should_dump = True)
@@ -157,7 +158,7 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
     #         best_iteration = i
 
     if log_results:
-        log_gradient_boosting_results(filtered_df,
+        log_gradient_boosting_results(column_names,
                                       best_score,
                                       best_params,
                                       element,
@@ -226,10 +227,10 @@ def train_xgboost(df, element = None, params = None,
     Output:
     """
     print "Training xgboost with {} rounds".format(num_boost_round)
-    dtrain, filtered_df = xgboost_preprocessing(df,
-                                                element,
-                                                data_info,
-                                                should_dump = False)
+    dtrain, filtered_df, column_names = xgboost_preprocessing(df,
+                                                              element,
+                                                              data_info,
+                                                              should_dump = False)
 
     model = xgboost.train(params,
                           dtrain,
@@ -242,7 +243,7 @@ def predict_xgboost(df, element = None, data_info = None, should_dump = True):
     """
     """
     # Filter data
-    dtrain, filtered_df = xgboost_preprocessing(df,
+    dtrain, filtered_df, column_names = xgboost_preprocessing(df,
                                                 element,
                                                 data_info,
                                                 should_dump = should_dump)
@@ -330,7 +331,7 @@ def filter_training_set(df, data_info):
     # Filter based on minutes played
     return df[df.BucketedMinutes >= data_info.minutes_cutoff]
 
-def log_gradient_boosting_results(df, best_score, best_params, element,
+def log_gradient_boosting_results(column_names, best_score, best_params, element,
                                   data_info, param_grid, best_iter,
                                   num_boost_round):
     """
@@ -353,7 +354,7 @@ def log_gradient_boosting_results(df, best_score, best_params, element,
                                                       data_info.splits,
                                                       data_info.minutes_cutoff))
         f.write("\nColumns Used:\n")
-        for column in sorted(df.columns):
+        for column in sorted(column_names):
             f.write("\t{}\n".format(column))
         f.write("\nParameter Grid:\n")
         for key, value in param_grid.iteritems():

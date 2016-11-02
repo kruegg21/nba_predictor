@@ -333,7 +333,7 @@ def add_player_position(df, data_info):
 
     # Calculate residuals for filtered dataset
     all_five2 = all_five.copy()
-    dtrain, filtered_all_five = xgboost_preprocessing(all_five, element, data_info)
+    dtrain, filtered_all_five, column_names = xgboost_preprocessing(all_five, element, data_info)
 
     print len(all_five2)
     print "Number of starters with all five and more than 18 minutes played {}".format(len(all_five))
