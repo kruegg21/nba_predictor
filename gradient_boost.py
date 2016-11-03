@@ -139,7 +139,7 @@ def grid_search_xgboost(element = None, data_info = None, param_grid = None,
 
     # Multiprocessing Grid Search
     p = Pool(4)
-    arg_list = [(dict(zip(keys, i)), num_boost_round, data_info early_stopping_rounds)
+    arg_list = [(dict(zip(keys, i)), num_boost_round, data_info, early_stopping_rounds)
                 for i in product(*values)]
     results = p.map(parameter_wrapper, arg_list)
     print results
@@ -261,7 +261,8 @@ def predict_xgboost(df, element = None, data_info = None, should_dump = True):
                                                 should_dump = should_dump)
 
     # Load model
-    m = load_pickled_model('{}{}GradientBoostedRegressor'.format(element))
+    m = load_pickled_model('{}{}GradientBoostedRegressor'.format(data_info.transform,
+                                                                 element))
 
     # Predict
     pred = m.predict(dtrain)
