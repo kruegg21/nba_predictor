@@ -35,11 +35,11 @@ class cv_method(object):
         self.end_date = end_date
         self.minutes_cutoff = minutes_cutoff
         self.target_transformation = target_transformation
-        
+
         self.transform = None
         if self.target_transformation == log_transform:
             self.transform = "log"
-        elif self.target_transformation == log_transform:
+        elif self.target_transformation == power_transform:
             self.transform = "power"
         else:
             self.transform = "no"
