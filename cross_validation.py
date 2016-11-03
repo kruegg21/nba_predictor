@@ -35,14 +35,8 @@ class cv_method(object):
         self.end_date = end_date
         self.minutes_cutoff = minutes_cutoff
         self.target_transformation = target_transformation
+        
         self.transform = None
-
-    def __str__(self):
-        if self.method == time_series_cv:
-            name = "Time Series"
-        else:
-            name = "K-Folds"
-
         if self.target_transformation == log_transform:
             self.transform = "log"
         elif self.target_transformation == log_transform:
@@ -50,6 +44,11 @@ class cv_method(object):
         else:
             self.transform = "no"
 
+    def __str__(self):
+        if self.method == time_series_cv:
+            name = "Time Series"
+        else:
+            name = "K-Folds"
         return "{} from {} to {} with a minutes cutoff of {} and {} dependent \
                 variable transform".format(name,
                                            self.start_date,
