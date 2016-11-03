@@ -248,7 +248,7 @@ def train_xgboost(df, element = None, params = None,
         prefix = "{}".format(element)
     else:
         prefix = "{}{}".format(data_info.transform, element)
-    dump_pickled_model(model, '{}GradientBoostedRegressor').format(prefix)
+    dump_pickled_model(model, '{}GradientBoostedRegressor'.format(prefix))
 
 def predict_xgboost(df, element = None, data_info = None, should_dump = True):
     """
