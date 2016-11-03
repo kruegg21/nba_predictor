@@ -26,8 +26,7 @@ class cv_method(object):
                  start_date = '1999-01-01',
                  end_date = '2016-09-01',
                  minutes_cutoff = 3,
-                 target_transformation = no_transform,
-                 transorm = None):
+                 target_transformation = no_transform):
         assert (method in [time_series_cv, k_folds_cv]), \
             "Method must be 'time_series' or 'k_means'"
         self.method = method
@@ -36,6 +35,7 @@ class cv_method(object):
         self.end_date = end_date
         self.minutes_cutoff = minutes_cutoff
         self.target_transformation = target_transformation
+        self.transform = None
 
     def __str__(self):
         if self.method == time_series_cv:
