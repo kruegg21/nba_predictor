@@ -186,7 +186,7 @@ def parameter_wrapper(args):
     return grid_search_round(*args)
 
 @timeit
-def grid_search_round(params, num_boost_round = 500, data_info = None
+def grid_search_round(params, num_boost_round = 500, data_info = None,
                       early_stopping_rounds = 50):
     """
     Inputs:
