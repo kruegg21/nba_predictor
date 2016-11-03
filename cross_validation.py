@@ -42,18 +42,24 @@ class cv_method(object):
         elif self.target_transformation == power_transform:
             self.transform = "power"
         else:
-            self.transform = "no"
+            self.transform = ""
 
     def __str__(self):
         if self.method == time_series_cv:
             name = "Time Series"
         else:
             name = "K-Folds"
+
+        if not self.transform:
+            transform = "no"
+        else:
+            transform = self.transform
         return "{} from {} to {} with a minutes cutoff of {} and {} dependent \
                 variable transform".format(name,
                                            self.start_date,
                                            self.end_date,
-                                           self.minutes_cutoff)
+                                           self.minutes_cutoff,
+                                           transform)
 
 
 def time_series_cv(df, n_splits = 5, verbose = False):

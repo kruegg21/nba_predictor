@@ -124,9 +124,9 @@ def grid_search_xgboost(element = None, data_info = None, param_grid = None,
 
     # # Processes Data
     dtrain, filtered_df, column_names = xgboost_preprocessing(df,
-                                                element,
-                                                data_info,
-                                                should_dump = True)
+                                                              element,
+                                                              data_info,
+                                                              should_dump = True)
     dtrain.save_binary("data/train.buffer")
 
     # Grid Search
@@ -139,7 +139,7 @@ def grid_search_xgboost(element = None, data_info = None, param_grid = None,
 
     # Multiprocessing Grid Search
     p = Pool(4)
-    arg_list = [(dict(zip(keys, i)), num_boost_round, early_stopping_rounds)
+    arg_list = [(dict(zip(keys, i)), num_boost_round, data_info early_stopping_rounds)
                 for i in product(*values)]
     results = p.map(parameter_wrapper, arg_list)
     print results
@@ -186,7 +186,7 @@ def parameter_wrapper(args):
     return grid_search_round(*args)
 
 @timeit
-def grid_search_round(params, num_boost_round = 500,
+def grid_search_round(params, num_boost_round = 500, data_info = None
                       early_stopping_rounds = 50):
     """
     Inputs:
@@ -198,6 +198,7 @@ def grid_search_round(params, num_boost_round = 500,
         score -- float of best score from round
         iteration -- int of iteration that resulted in best score
     """
+
     dtrain = xgboost.DMatrix("data/train.buffer")
     print "Running search on {}".format(params)
     if xgboost.__version__ == '0.6':
@@ -247,11 +248,8 @@ def train_xgboost(df, element = None, params = None,
                           num_boost_round = num_boost_round)
 
     # Dump model to pickle
-    if data_info.transform == "no":
-        prefix = "{}".format(element)
-    else:
-        prefix = "{}{}".format(data_info.transform, element)
-    dump_pickled_model(model, '{}GradientBoostedRegressor'.format(prefix))
+    dump_pickled_model(model, '{}{}GradientBoostedRegressor'.format(data_info.transform,
+                                                                    element))
 
 def predict_xgboost(df, element = None, data_info = None, should_dump = True):
     """
@@ -263,7 +261,7 @@ def predict_xgboost(df, element = None, data_info = None, should_dump = True):
                                                 should_dump = should_dump)
 
     # Load model
-    m = load_pickled_model('{}GradientBoostedRegressor'.format(element))
+    m = load_pickled_model('{}{}GradientBoostedRegressor'.format(element))
 
     # Predict
     pred = m.predict(dtrain)

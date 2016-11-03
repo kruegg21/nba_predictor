@@ -374,6 +374,7 @@ if __name__ == "__main__":
     			  'subsample':[0.5, 0.6, 0.7],
     			  'colsample_bytree':[0.6]
                  }
+                 
     xgboost_cv = grid_search_xgboost(element = 'FanDuelScore',
                                      data_info = data_info,
                                      param_grid = param_grid,
