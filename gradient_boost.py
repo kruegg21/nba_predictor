@@ -74,12 +74,15 @@ Code to transition from functional architecture to class architecture
 #                 self.best_score = score
 #                 self.best_params = params
 
-def xgboost_preprocessing(df, element, cv, should_dump = True):
+def xgboost_preprocessing(df, element, data_info, should_dump = True):
     # Select only features we need for particualr stat
-    df = filter_training_set(df, cv)
+    df = filter_training_set(df, data_info)
     filtered_df, remaining_df = select_features(df,
                                                 element,
                                                 should_dump = should_dump)
+
+    # Transform dependent variable
+    data_info.target_transformation(df, element)
 
     # Create indepentent and dependent variable arrays
     y_train = filtered_df.pop(element).values
@@ -241,7 +244,11 @@ def train_xgboost(df, element = None, params = None,
                           num_boost_round = num_boost_round)
 
     # Dump model to pickle
-    dump_pickled_model(model, '{}GradientBoostedRegressor'.format(element))
+    if data_info.transform == "no":
+        prefix = "{}".format(element)
+    else:
+        prefix = "{}{}".format(data_info.transform, element)
+    dump_pickled_model(model, '{}GradientBoostedRegressor').format(prefix)
 
 def predict_xgboost(df, element = None, data_info = None, should_dump = True):
     """
@@ -361,24 +368,24 @@ def log_gradient_boosting_results(column_names, best_score, best_params, element
     """
     with open('logs/{}GradientBoostedLog.txt'.format(element), 'a+') as f:
         f.write('-' * 40)
+
         f.write("\nTrain Set:\n")
-        f.write("Start date {}, end date {}, with {} splits and \
-                bucketed minutes cutoff of {}\n".format(data_info.start_date,
-                                                      data_info.end_date,
-                                                      data_info.splits,
-                                                      data_info.minutes_cutoff))
+        f.write("{}".format(data_info))
+
         f.write("\nColumns Used:\n")
         for column in sorted(column_names):
             f.write("\t{}\n".format(column))
+
         f.write("\nParameter Grid:\n")
         for key, value in param_grid.iteritems():
             f.write("\t{}: {}\n".format(key, value))
+
         f.write("\nBest Parameters:\n")
         for key, value in best_params.iteritems():
             f.write("\t{}: {}\n".format(key, value))
-        f.write("\tnum_boost_round: {}/{}\n".format(best_iter, num_boost_round))
-        f.write("\nBest Score: ")
-        f.write(str(best_score))
+
+        f.write("\tNum_boost_rounds: {}/{}\n".format(best_iter, num_boost_round))
+        f.write("\nBest Score: {}").format(str(best_score))
         f.write('\n' * 3)
 
 if __name__ == "__main__":

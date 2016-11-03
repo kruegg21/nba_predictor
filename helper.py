@@ -168,8 +168,20 @@ def p():
 
 
 def add_bucketed_minutes(df):
-    df['BucketedMinutes'] = np.floor(df.PlayerMP / 6)
+    """
+    0-6 -> 0
+    7-12 -> 1
+    13-18 -> 2
+    19-24 -> 3
+    25-30 -> 4
+    31-36 -> 5
+    37-42 -> 6
+    43-48 -> 7
 
+    Has a ceiling of 7 for bucketed minutes
+    """
+    df['BucketedMinutes'] = np.floor((df.PlayerMP - 1) / 6)
+    df[df.BucketedMinutes > 7] = 7
 
 @timeit
 def add_estimated_game_pace(df, should_train_linear_model = True):

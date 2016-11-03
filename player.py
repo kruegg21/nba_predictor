@@ -37,9 +37,6 @@ def build_basic_player_data(player_df):
     # Minute adjusted stats
     add_player_per_minute_stats(player_df)
 
-    # Add FanDuel score
-    # add_fantasy_score(player_df)
-
     # Drop certain columns
     remove_columns(player_df, ['Rank', 'Unnamed: 0', '2P%', '3P%',
                                'FG%', 'FT%', 'Result', 'GmSc'])

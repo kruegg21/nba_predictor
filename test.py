@@ -13,7 +13,7 @@ from linear_model import linear_model
 from random_forest import train_random_forest, predict_random_forest
 from optimal_lineups import optimize_lineups
 from minute_estimation import create_minutes_estimation, read_minute_estimation
-from cross_validation import cv_method, k_folds_cv
+from cross_validation import cv_method, k_folds_cv, power_transform, log_transform
 
 def build_merged_data(player_df, team_df, train = True):
     """
@@ -30,15 +30,6 @@ def build_merged_data(player_df, team_df, train = True):
                                                'New', 'Prediction'])
 
     # Bucket minutes
-    """
-    0-5 -> 0
-    6-11 -> 1
-    12-17 -> 2
-    18-23 -> 3
-    24-29 -> 4
-    30-35 -> 5
-    36-41 -> 6
-    """
     add_bucketed_minutes(merged_df)
 
     # Get stats per possession played
@@ -89,7 +80,8 @@ def build_merged_data(player_df, team_df, train = True):
 
 
 def train(should_scrape = True, should_dump = True, should_build = True,
-          should_train_linear_models = True, cv = None):
+          should_train_linear_models = True, data_info = None, params = None,
+          num_boost_round = None):
     """
     Takes a DataFrame of player data as 'player_df' and scrapes data not
     included in DataFrame. It then builds the dataset for all the data that
@@ -140,28 +132,16 @@ def train(should_scrape = True, should_dump = True, should_build = True,
         dump_merged_data(merged_df)
 
     # Train
-    train_model(merged_df, cv)
+    train_model(merged_df, params, num_boost_round, data_info)
 
 
-def train_model(df, data_info = None):
+def train_model(df, params = None, num_boost_round = None, data_info = None):
     # # Get list of statistics we want to predict
     # prediction_statistics = ['Player' + stat for stat in main_stat_list_minus_minutes]
     #
     # # Build Random Forest for each statistic
     # for element in prediction_statistics:
     #     #train_random_forest(df, element)
-
-    num_boost_round = 739
-    params = {
-                 'colsample_bytree': 0.6,
-                 'silent': 1,
-                 'learning_rate': 0.05,
-                 'subsample': 0.6,
-                 'max_depth': 4,
-                 'gamma': 0.1,
-                 'lambda': 0.1
-             }
-
     train_xgboost(df,
                   element = 'FanDuelScore',
                   params = params,
@@ -170,7 +150,7 @@ def train_model(df, data_info = None):
                   )
 
 def predict(should_scrape = True, should_dump = True, should_build = True,
-            cv = None):
+            data_info = None):
     # Read in full player DataFrame and determine what to scrape
     player_df = read_player_data()
     team_df = read_team_data()
@@ -229,7 +209,7 @@ def predict(should_scrape = True, should_dump = True, should_build = True,
 
     # Make predictions
     make_prediction(prediction_df,
-                    data_info = cv,
+                    data_info = data_info,
                     use_random_forest = False)
 
 def make_prediction(df, data_info = None, use_random_forest = False):
@@ -270,9 +250,6 @@ def make_prediction(df, data_info = None, use_random_forest = False):
 
     # Dump to file
     dump(predictions, 'final_score')
-
-
-
 
 
 """
@@ -360,15 +337,51 @@ def add_lineup_position(df):
     return df
 
 if __name__ == "__main__":
-    # Specifies cross validation technique to use for training
-    cv = cv_method(k_folds_cv, 5, '1999-01-01', '2016-09-01', 3)
+    # Specifies how data and models should be constructed and trained
+    data_info = cv_method(method = k_folds_cv,
+                          splits = 5,
+                          start_date = '1999-01-01',
+                          end_date = '2016-09-01',
+                          minutes_cutoff = 3,
+                          target_transformation = power_transform)
 
     # Train
+    num_boost_round = 739
+    params = {
+                 'colsample_bytree': 0.6,
+                 'silent': 0,
+                 'learning_rate': 0.05,
+                 'subsample': 0.6,
+                 'max_depth': 4,
+                 'gamma': 0.1,
+                 'lambda': 0.1
+             }
     train(should_scrape = False,
           should_dump = False,
           should_build = False,
           should_train_linear_models = False,
-          cv = cv)
+          data_info = data_info,
+          params = params,
+          num_boost_round = num_boost_round)
+
+    # Grid Search
+    param_grid = {
+                  'max_depth':[4],
+    			  'learning_rate':[0.05],
+    			  'silent':[1],
+    			  'gamma':[0.1, 0.15],
+    			  'lambda':[0.1, 0.15],
+    			  'subsample':[0.5, 0.6, 0.7],
+    			  'colsample_bytree':[0.6]
+                 }
+    xgboost_cv = grid_search_xgboost(df,
+                                     element = 'FanDuelScore',
+                                     data_info = data_info,
+                                     param_grid = param_grid,
+                                     num_boost_round = 3000,
+                                     early_stopping_rounds = 50,
+                                     log_results = True)
+
     # from read_write import read_merged_data
     #
     # data_info = cv_method(method = k_folds_cv,
@@ -383,7 +396,7 @@ if __name__ == "__main__":
     # predict(should_scrape = False,
     #         should_dump = True,
     #         should_build = True,
-    #         cv = cv)
+    #         cv = data_info)
 
     # # Pick optimal lineups
     # optimize_lineups(n_lineups = 100,

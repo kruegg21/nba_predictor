@@ -5,6 +5,17 @@ from sklearn.model_selection import TimeSeriesSplit
 from sklearn.model_selection import KFold
 from datetime import datetime
 
+# Dependent variable transformations
+def log_transform(df, element):
+    df[element] = np.log(df[element])
+
+def power_transform(df, element):
+    df[element] = df[element]**1.5
+
+def no_transform(df, element):
+    pass
+
+
 class cv_method(object):
     """
     Holds information about how to cross validate our models
@@ -14,7 +25,9 @@ class cv_method(object):
                  splits = 5,
                  start_date = '1999-01-01',
                  end_date = '2016-09-01',
-                 minutes_cutoff = 3):
+                 minutes_cutoff = 3,
+                 target_transformation = no_transform,
+                 transorm = None):
         assert (method in [time_series_cv, k_folds_cv]), \
             "Method must be 'time_series' or 'k_means'"
         self.method = method
@@ -22,14 +35,27 @@ class cv_method(object):
         self.start_date = start_date
         self.end_date = end_date
         self.minutes_cutoff = minutes_cutoff
+        self.target_transformation = target_transformation
 
     def __str__(self):
         if self.method == time_series_cv:
             name = "Time Series"
         else:
             name = "K-Folds"
-        return "{} from {} to {} with a minutes cutoff of " \
-            .format(name, self.start_date, self.end_date, self.minutes_cutoff)
+
+        if self.target_transformation == log_transform:
+            self.transform = "log"
+        elif self.target_transformation == log_transform:
+            self.transform = "power"
+        else:
+            self.transform = "no"
+
+        return "{} from {} to {} with a minutes cutoff of {} and {} dependent \
+                variable transform".format(name,
+                                           self.start_date,
+                                           self.end_date,
+                                           self.minutes_cutoff)
+
 
 def time_series_cv(df, n_splits = 5, verbose = False):
     # Global date range
