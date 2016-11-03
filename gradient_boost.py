@@ -7,7 +7,7 @@ from multiprocessing import Pool, cpu_count
 from helper import add_fantasy_score, timeit
 from datetime import datetime
 from itertools import product
-from read_write import load_pickled_model, dump_pickled_model
+from read_write import load_pickled_model, dump_pickled_model, read_merged_data
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import r2_score
 from stat_lists import *
@@ -104,7 +104,7 @@ def xgboost_preprocessing(df, element, data_info, should_dump = True):
 
     return dtrain, filtered_df, column_names
 
-def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
+def grid_search_xgboost(element = None, data_info = None, param_grid = None,
                         num_boost_round = 500, early_stopping_rounds = 50,
                         log_results = True):
     """
@@ -119,6 +119,9 @@ def grid_search_xgboost(df, element = None, data_info = None, param_grid = None,
     Output:
         None
     """
+    # Read in data
+    df = read_merged_data()
+
     # # Processes Data
     dtrain, filtered_df, column_names = xgboost_preprocessing(df,
                                                 element,
@@ -389,7 +392,6 @@ def log_gradient_boosting_results(column_names, best_score, best_params, element
         f.write('\n' * 3)
 
 if __name__ == "__main__":
-    from read_write import read_merged_data
     df = read_merged_data()
     data_info = cv_method(method = k_folds_cv,
                           splits = 5,
@@ -418,7 +420,7 @@ if __name__ == "__main__":
     if True:
         print "Grid Search GB for FanDuelScore"
         add_fantasy_score(df)
-        xgboost_cv = grid_search_xgboost(df,
+        xgboost_cv = grid_search_xgboost(
                                          element = 'FanDuelScore',
                                          data_info = data_info,
                                          param_grid = param_grid,

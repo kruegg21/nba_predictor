@@ -346,23 +346,23 @@ if __name__ == "__main__":
                           target_transformation = power_transform)
 
     # Train
-    num_boost_round = 739
-    params = {
-                 'colsample_bytree': 0.6,
-                 'silent': 0,
-                 'learning_rate': 0.05,
-                 'subsample': 0.6,
-                 'max_depth': 4,
-                 'gamma': 0.1,
-                 'lambda': 0.1
-             }
-    train(should_scrape = False,
-          should_dump = False,
-          should_build = False,
-          should_train_linear_models = False,
-          data_info = data_info,
-          params = params,
-          num_boost_round = num_boost_round)
+    # num_boost_round = 739
+    # params = {
+    #              'colsample_bytree': 0.6,
+    #              'silent': 0,
+    #              'learning_rate': 0.05,
+    #              'subsample': 0.6,
+    #              'max_depth': 4,
+    #              'gamma': 0.1,
+    #              'lambda': 0.1
+    #          }
+    # train(should_scrape = False,
+    #       should_dump = False,
+    #       should_build = False,
+    #       should_train_linear_models = False,
+    #       data_info = data_info,
+    #       params = params,
+    #       num_boost_round = num_boost_round)
 
     # Grid Search
     param_grid = {
@@ -374,8 +374,7 @@ if __name__ == "__main__":
     			  'subsample':[0.5, 0.6, 0.7],
     			  'colsample_bytree':[0.6]
                  }
-    xgboost_cv = grid_search_xgboost(df,
-                                     element = 'FanDuelScore',
+    xgboost_cv = grid_search_xgboost(element = 'FanDuelScore',
                                      data_info = data_info,
                                      param_grid = param_grid,
                                      num_boost_round = 3000,
