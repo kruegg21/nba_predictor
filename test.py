@@ -244,7 +244,10 @@ def make_prediction(df, data_info = None, use_random_forest = False):
         variance = 0
 
     # Create DataFrame with 'Player', 'PlayerID', 'Score', and 'Variance'
+    print score.shape
     predictions = pd.DataFrame(df[['Player', 'PlayerID']])
+    print len(predictions)
+    p()
     predictions['Score'] = score
     predictions['Variance'] = variance
 
@@ -346,41 +349,41 @@ if __name__ == "__main__":
                           target_transformation = power_transform)
 
     # Train
-    # num_boost_round = 739
-    # params = {
-    #              'colsample_bytree': 0.6,
-    #              'silent': 0,
-    #              'learning_rate': 0.05,
-    #              'subsample': 0.6,
-    #              'max_depth': 4,
-    #              'gamma': 0.1,
-    #              'lambda': 0.1
-    #          }
-    # train(should_scrape = False,
-    #       should_dump = False,
-    #       should_build = False,
-    #       should_train_linear_models = False,
-    #       data_info = data_info,
-    #       params = params,
-    #       num_boost_round = num_boost_round)
+    num_boost_round = 739
+    params = {
+                 'colsample_bytree': 0.6,
+                 'silent': 0,
+                 'learning_rate': 0.05,
+                 'subsample': 0.6,
+                 'max_depth': 4,
+                 'gamma': 0.1,
+                 'lambda': 0.1
+             }
+    train(should_scrape = False,
+          should_dump = True,
+          should_build = True,
+          should_train_linear_models = False,
+          data_info = data_info,
+          params = params,
+          num_boost_round = num_boost_round)
 
     # Grid Search
-    param_grid = {
-                  'max_depth':[4],
-    			  'learning_rate':[0.05],
-    			  'silent':[1],
-    			  'gamma':[0.15],
-    			  'lambda':[0.15],
-    			  'subsample':[0.7],
-    			  'colsample_bytree':[0.6]
-                 }
-
-    xgboost_cv = grid_search_xgboost(element = 'FanDuelScore',
-                                     data_info = data_info,
-                                     param_grid = param_grid,
-                                     num_boost_round = 3000,
-                                     early_stopping_rounds = 50,
-                                     log_results = True)
+    # param_grid = {
+    #               'max_depth':[4],
+    # 			  'learning_rate':[0.05],
+    # 			  'silent':[1],
+    # 			  'gamma':[0.15],
+    # 			  'lambda':[0.15],
+    # 			  'subsample':[0.7],
+    # 			  'colsample_bytree':[0.6]
+    #              }
+    #
+    # xgboost_cv = grid_search_xgboost(element = 'FanDuelScore',
+    #                                  data_info = data_info,
+    #                                  param_grid = param_grid,
+    #                                  num_boost_round = 3000,
+    #                                  early_stopping_rounds = 50,
+    #                                  log_results = True)
 
     # from read_write import read_merged_data
     #
@@ -392,12 +395,12 @@ if __name__ == "__main__":
     # df = read_merged_data()
     # add_player_position(df, data_info)
 
-    # # # # Predict
-    # predict(should_scrape = False,
-    #         should_dump = True,
-    #         should_build = True,
-    #         cv = data_info)
+    # Predict
+    predict(should_scrape = False,
+            should_dump = True,
+            should_build = True,
+            data_info = data_info)
 
-    # # Pick optimal lineups
-    # optimize_lineups(n_lineups = 100,
-    #                  ratio_cutoff = 0.3)
+    # Pick optimal lineups
+    optimize_lineups(n_lineups = 100,
+                     ratio_cutoff = 0.3)

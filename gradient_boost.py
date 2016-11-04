@@ -82,10 +82,12 @@ def xgboost_preprocessing(df, element, data_info, should_dump = True):
                                                 should_dump = should_dump)
 
     # Transform dependent variable
-    data_info.target_transformation(df, element)
+    data_info.target_transformation(filtered_df, element)
 
     # Create indepentent and dependent variable arrays
     y_train = filtered_df.pop(element).values
+    print y_train
+    raw_input()
     X_train = filtered_df.values
 
     # Create DMatrix
@@ -256,9 +258,9 @@ def predict_xgboost(df, element = None, data_info = None, should_dump = True):
     """
     # Filter data
     dtrain, filtered_df, column_names = xgboost_preprocessing(df,
-                                                element,
-                                                data_info,
-                                                should_dump = should_dump)
+                                                              element,
+                                                              data_info,
+                                                              should_dump = should_dump)
 
     # Load model
     m = load_pickled_model('{}{}GradientBoostedRegressor'.format(data_info.transform,
@@ -266,6 +268,9 @@ def predict_xgboost(df, element = None, data_info = None, should_dump = True):
 
     # Predict
     pred = m.predict(dtrain)
+
+    # Untransform predictions
+
 
     return pred, filtered_df
 
@@ -387,7 +392,7 @@ def log_gradient_boosting_results(column_names, best_score, best_params, element
             f.write("\t{}: {}\n".format(key, value))
 
         f.write("\tNum_boost_rounds: {}/{}\n".format(best_iter, num_boost_round))
-        f.write("\nBest Score: {}").format(str(best_score))
+        f.write("\nBest Score: {}".format(str(best_score)))
         f.write('\n' * 3)
 
 if __name__ == "__main__":
@@ -400,7 +405,7 @@ if __name__ == "__main__":
 
     param_grid = {
                   'max_depth':[4],
-    			  'learning_rate':[0.05],
+    			  'learning_rate':[0.5],
     			  'silent':[1],
     			  'gamma':[0.1, 0.15],
     			  'lambda':[0.1, 0.15],

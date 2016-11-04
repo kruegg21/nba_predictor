@@ -9,11 +9,17 @@ from datetime import datetime
 def log_transform(df, element):
     df[element] = np.log(df[element])
 
+def log_reverse_transform(df, element):
+    df[element] = np.exp(df[element])
+
 def power_transform(df, element):
-    df[element] = df[element]**1.5
+    df[element] = df[element]**(float(3)/2)
+
+def power_reverse_transform(df, element):
+    df[element] = df[element]**(float(-3)/2)
 
 def no_transform(df, element):
-    pass
+    return
 
 
 class cv_method(object):
@@ -37,12 +43,16 @@ class cv_method(object):
         self.target_transformation = target_transformation
 
         self.transform = None
+        self.target_reverse_transformation
         if self.target_transformation == log_transform:
             self.transform = "log"
+            self.target_reverse_transformation = log_reverse_transform
         elif self.target_transformation == power_transform:
             self.transform = "power"
+            self.target_reverse_transformation = power_reverse_transform
         else:
             self.transform = ""
+            self.target_reverse_transformation = no_transform
 
     def __str__(self):
         if self.method == time_series_cv:
