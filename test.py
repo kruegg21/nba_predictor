@@ -13,7 +13,7 @@ from linear_model import linear_model
 from random_forest import train_random_forest, predict_random_forest
 from optimal_lineups import optimize_lineups
 from minute_estimation import create_minutes_estimation, read_minute_estimation
-from cross_validation import cv_method, k_folds_cv, power_transform, log_transform
+from cross_validation import cv_method, k_folds_cv, power_transform, log_transform, no_transform
 
 def build_merged_data(player_df, team_df, train = True):
     """
@@ -143,7 +143,7 @@ def train_model(df, params = None, num_boost_round = None, data_info = None):
     # for element in prediction_statistics:
     #     #train_random_forest(df, element)
     train_xgboost(df,
-                  element = 'FanDuelScore',
+                  element = data_info.target_variable,
                   params = params,
                   data_info = data_info,
                   num_boost_round = num_boost_round
@@ -237,17 +237,14 @@ def make_prediction(df, data_info = None, use_random_forest = False):
             variance = np.add(variance, np.multiply(variance, int(weight**2)))
 
     else:
-        score, _ = predict_xgboost(df,
-                                   'FanDuelScore',
+        score, filtered_df = predict_xgboost(df,
+                                   data_info.target_variable,
                                    data_info = data_info,
                                    should_dump = True)
         variance = 0
 
     # Create DataFrame with 'Player', 'PlayerID', 'Score', and 'Variance'
-    print score.shape
-    predictions = pd.DataFrame(df[['Player', 'PlayerID']])
-    print len(predictions)
-    p()
+    predictions = pd.DataFrame(filtered_df[['Player', 'PlayerID']])
     predictions['Score'] = score
     predictions['Variance'] = variance
 
@@ -346,6 +343,7 @@ if __name__ == "__main__":
                           start_date = '1999-01-01',
                           end_date = '2016-09-01',
                           minutes_cutoff = 3,
+                          target_variable = 'DraftKingsScore',
                           target_transformation = power_transform)
 
     # Train
@@ -360,8 +358,8 @@ if __name__ == "__main__":
                  'lambda': 0.1
              }
     train(should_scrape = False,
-          should_dump = True,
-          should_build = True,
+          should_dump = False,
+          should_build = False,
           should_train_linear_models = False,
           data_info = data_info,
           params = params,
@@ -378,7 +376,7 @@ if __name__ == "__main__":
     # 			  'colsample_bytree':[0.6]
     #              }
     #
-    # xgboost_cv = grid_search_xgboost(element = 'FanDuelScore',
+    # xgboost_cv = grid_search_xgboost(element = data_info.target_variable,
     #                                  data_info = data_info,
     #                                  param_grid = param_grid,
     #                                  num_boost_round = 3000,
@@ -396,11 +394,11 @@ if __name__ == "__main__":
     # add_player_position(df, data_info)
 
     # Predict
-    predict(should_scrape = False,
-            should_dump = True,
-            should_build = True,
-            data_info = data_info)
-
-    # Pick optimal lineups
-    optimize_lineups(n_lineups = 100,
-                     ratio_cutoff = 0.3)
+    # predict(should_scrape = False,
+    #         should_dump = False,
+    #         should_build = True,
+    #         data_info = data_info)
+    #
+    # # Pick optimal lineups
+    # optimize_lineups(n_lineups = 500,
+    #                  ratio_cutoff = 0.3)

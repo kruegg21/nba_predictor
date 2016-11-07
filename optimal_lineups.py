@@ -235,7 +235,7 @@ def optimize_lineups(n_lineups = 100, ratio_cutoff = 0.7):
 
 		# Filter columns we are intersted in
 		slate_df = slate_df[['Player', 'PlayerID', 'Id', 'Score', 'Variance',
-							 'Salary', 'Team', 'Position']]
+							 'Salary', 'Team', 'Position', 'Opponent']]
 		optimal_lineup_test(slate_df, 'Score', ratio_cutoff, str(slate_id), n_lineups)
 
 

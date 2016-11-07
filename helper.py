@@ -464,10 +464,25 @@ def add_season(df):
 def add_player_per_minute_stats(df):
     per_minute_stats(df, 'PlayerMP', ['Player' + stat for stat in main_stat_list_minus_minutes])
 
+def add_total_rebounds(df):
+    df['PlayerTRB'] = df.PlayerDRB + df.PlayerORB
+
 def add_fantasy_score(df):
-    df['FanDuelScore'] = df.PlayerPTS + 1.2 * df.PlayerDRB + \
-                         1.2 * df.PlayerORB + 1.5 * df.PlayerAST + \
-                         2 * df.PlayerBLK + 2 * df.PlayerSTL - df.PlayerTOV
+    df['FanDuelScore'] = df.PlayerPTS + 1.2 * df.PlayerTRB + \
+                         1.5 * df.PlayerAST + 2 * df.PlayerBLK + 2 * \
+                         df.PlayerSTL - df.PlayerTOV
+    df['DraftKingsScore'] = df.PlayerPTS + 0.5 * df['3P'] + \
+                            1.25 * df.PlayerTRB + 1.5 * df.PlayerAST + \
+                            2 * df.PlayerSTL + 2 * df.PlayerBLK + \
+                            1.5 * df.DoubleDouble + 3 * df.TripleDouble - \
+                            0.5 * df.PlayerTOV
+
+def add_doubles(df):
+    doubles = (df.PlayerPTS > 9) + (df.PlayerSTL > 9) + \
+              (df.PlayerTRB > 9) + (df.PlayerAST > 9) + \
+              (df.PlayerBLK > 9)
+    df['DoubleDouble'] = doubles == 2
+    df['TripleDouble'] = doubles >= 3
 
 def add_possessions(df):
     """

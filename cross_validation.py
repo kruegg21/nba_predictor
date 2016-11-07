@@ -10,16 +10,27 @@ def log_transform(df, element):
     df[element] = np.log(df[element])
 
 def log_reverse_transform(df, element):
-    df[element] = np.exp(df[element])
+    if isinstance(df, pd.DataFrame):
+        df[element] = np.exp(df[element])
+        return None
+    else:
+        return np.exp(df)
 
 def power_transform(df, element):
-    df[element] = df[element]**(float(3)/2)
+    df[element] = df[element]**(1.5)
+    df[element].fillna(0, inplace = True)
 
 def power_reverse_transform(df, element):
-    df[element] = df[element]**(float(-3)/2)
+    if isinstance(df, pd.DataFrame):
+        df[element] = df[element].pow(float(1)/1.5)
+    else:
+        return df**(float(1)/1.5)
 
 def no_transform(df, element):
-    return
+    if isinstance(df, pd.DataFrame):
+        return None
+    else:
+        return df
 
 
 class cv_method(object):
@@ -32,6 +43,7 @@ class cv_method(object):
                  start_date = '1999-01-01',
                  end_date = '2016-09-01',
                  minutes_cutoff = 3,
+                 target_variable = 'FanDuelScore',
                  target_transformation = no_transform):
         assert (method in [time_series_cv, k_folds_cv]), \
             "Method must be 'time_series' or 'k_means'"
@@ -40,10 +52,11 @@ class cv_method(object):
         self.start_date = start_date
         self.end_date = end_date
         self.minutes_cutoff = minutes_cutoff
+        self.target_variable = target_variable
         self.target_transformation = target_transformation
 
         self.transform = None
-        self.target_reverse_transformation
+        self.target_reverse_transformation = None
         if self.target_transformation == log_transform:
             self.transform = "log"
             self.target_reverse_transformation = log_reverse_transform

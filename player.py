@@ -28,6 +28,12 @@ def build_basic_player_data(player_df):
     # Make Position Numeric
     make_position_numeric(player_df)
 
+    # Add total rebounds
+    add_total_rebounds(df)
+
+    # Add triple double and double double
+    add_doubles(df)
+
     # Add Fantasy score
     add_fantasy_score(player_df)
 

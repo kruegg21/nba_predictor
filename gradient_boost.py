@@ -81,14 +81,21 @@ def xgboost_preprocessing(df, element, data_info, should_dump = True):
                                                 element,
                                                 should_dump = should_dump)
 
+    untransformed = df[element].values
+    print "Y train untransformed is {}".format(untransformed)
+    raw_input()
+
     # Transform dependent variable
     data_info.target_transformation(filtered_df, element)
 
     # Create indepentent and dependent variable arrays
     y_train = filtered_df.pop(element).values
-    print y_train
-    raw_input()
     X_train = filtered_df.values
+    print X_train
+
+    print "Y train transformed is {}".format(y_train)
+    print y_train[np.isnan(y_train)]
+    raw_input()
 
     # Create DMatrix
     dtrain = xgboost.DMatrix(X_train,
@@ -269,8 +276,13 @@ def predict_xgboost(df, element = None, data_info = None, should_dump = True):
     # Predict
     pred = m.predict(dtrain)
 
-    # Untransform predictions
+    print "Untransformed predictions: {}".format(pred)
+    raw_input()
 
+    # Untransform predictions
+    pred = data_info.target_reverse_transformation(pred, element)
+    print "Transformed predictions: {}".format(pred)
+    raw_input()
 
     return pred, filtered_df
 
@@ -444,7 +456,7 @@ if __name__ == "__main__":
                   'lambda': 0.1
                  }
 
-        train_xgboost(df,
+        gboost(df,
                       element = 'FanDuelScore',
                       params = params,
                       data_info = data_info,
