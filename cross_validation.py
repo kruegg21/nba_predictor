@@ -6,27 +6,27 @@ from sklearn.model_selection import KFold
 from datetime import datetime
 
 # Dependent variable transformations
-def log_transform(df, element):
+def log_transform(df, element, _):
     df[element] = np.log(df[element])
 
-def log_reverse_transform(df, element):
+def log_reverse_transform(df, element, _):
     if isinstance(df, pd.DataFrame):
         df[element] = np.exp(df[element])
         return None
     else:
         return np.exp(df)
 
-def power_transform(df, element):
-    df[element] = df[element]**(1.5)
+def power_transform(df, element, power):
+    df[element] = df[element]**(power)
     df[element].fillna(0, inplace = True)
 
-def power_reverse_transform(df, element):
+def power_reverse_transform(df, element, power):
     if isinstance(df, pd.DataFrame):
-        df[element] = df[element].pow(float(1)/1.5)
+        df[element] = df[element].pow(float(1)/power)
     else:
         return df**(float(1)/1.5)
 
-def no_transform(df, element):
+def no_transform(df, element, _):
     if isinstance(df, pd.DataFrame):
         return None
     else:
@@ -44,7 +44,8 @@ class cv_method(object):
                  end_date = '2016-09-01',
                  minutes_cutoff = 3,
                  target_variable = 'FanDuelScore',
-                 target_transformation = no_transform):
+                 target_transformation = no_transform,
+                 power = None):
         assert (method in [time_series_cv, k_folds_cv]), \
             "Method must be 'time_series' or 'k_means'"
         self.method = method
@@ -54,6 +55,7 @@ class cv_method(object):
         self.minutes_cutoff = minutes_cutoff
         self.target_variable = target_variable
         self.target_transformation = target_transformation
+        self.power = power
 
         self.transform = None
         self.target_reverse_transformation = None
@@ -78,11 +80,12 @@ class cv_method(object):
         else:
             transform = self.transform
         return "{} from {} to {} with a minutes cutoff of {} and {} dependent \
-                variable transform".format(name,
-                                           self.start_date,
-                                           self.end_date,
-                                           self.minutes_cutoff,
-                                           transform)
+                variable transform {} {}".format(name,
+                                                 self.start_date,
+                                                 self.end_date,
+                                                 self.minutes_cutoff,
+                                                 transform,
+                                                 self.power)
 
 
 def time_series_cv(df, n_splits = 5, verbose = False):

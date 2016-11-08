@@ -352,7 +352,8 @@ if __name__ == "__main__":
                           end_date = '2016-09-01',
                           minutes_cutoff = 3,
                           target_variable = 'FanDuelScore',
-                          target_transformation = power_transform)
+                          target_transformation = no_transform)
+                        #   power = 1.5)
 
     # Train
     # num_boost_round = 739
@@ -378,8 +379,8 @@ if __name__ == "__main__":
                 'max_depth':[4],
     			  'learning_rate':[0.05],
     			  'silent':[1],
-    			  'gamma':[0.15, 0.18, 0.20],
-    			  'lambda':[0.15, 0.18, 0.20],
+    			  'gamma':[0.15],
+    			  'lambda':[0.15],
     			  'subsample':[0.7],
     			  'colsample_bytree':[0.6]
                  }
@@ -408,7 +409,8 @@ if __name__ == "__main__":
     #                       end_date = '2017-09-01',
     #                       minutes_cutoff = 3,
     #                       target_variable = 'FanDuelScore',
-    #                       target_transformation = power_transform)
+    #                       target_transformation = power_transform,
+    #                       power = 1.5)
     #
     # predict(should_scrape = False,
     #         should_dump = False,

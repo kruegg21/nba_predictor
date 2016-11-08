@@ -85,7 +85,7 @@ def xgboost_preprocessing(df, element, data_info, should_dump = True):
     print "Y train untransformed is {}".format(untransformed)
 
     # Transform dependent variable
-    data_info.target_transformation(filtered_df, element)
+    data_info.target_transformation(filtered_df, element, data_info.power)
 
     # Create indepentent and dependent variable arrays
     y_train = filtered_df.pop(element).values
@@ -277,7 +277,7 @@ def predict_xgboost(df, element = None, data_info = None, should_dump = True):
     raw_input()
 
     # Untransform predictions
-    pred = data_info.target_reverse_transformation(pred, element)
+    pred = data_info.target_reverse_transformation(pred, element, data_info.power)
     print "Transformed predictions: {}".format(pred)
     raw_input()
 
