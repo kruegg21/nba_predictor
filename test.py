@@ -352,45 +352,45 @@ if __name__ == "__main__":
                           end_date = '2016-09-01',
                           minutes_cutoff = 3,
                           target_variable = 'FanDuelScore',
-                          target_transformation = no_transform)
-                        #   power = 1.5)
+                          target_transformation = power_transform,
+                          power = 1.5)
 
     # Train
-    # num_boost_round = 739
-    # params = {
-    #              'colsample_bytree': 0.6,
-    #              'silent': 0,
-    #              'learning_rate': 0.05,
-    #              'subsample': 0.6,
-    #              'max_depth': 4,
-    #              'gamma': 0.1,
-    #              'lambda': 0.1
-    #          }
-    # train(should_scrape = False,
-    #       should_dump = True,
-    #       should_build = True,
-    #       should_train_linear_models = False,
-    #       data_info = data_info,
-    #       params = params,
-    #       num_boost_round = num_boost_round)
+    num_boost_round = 845
+    params = {
+                 'colsample_bytree': 0.6,
+                 'silent': 0,
+                 'learning_rate': 0.05,
+                 'subsample': 0.6,
+                 'max_depth': 4,
+                 'gamma': 0.15,
+                 'lambda': 0.2
+             }
+    train(should_scrape = False,
+          should_dump = False,
+          should_build = False,
+          should_train_linear_models = False,
+          data_info = data_info,
+          params = params,
+          num_boost_round = num_boost_round)
 
     # Grid Search
-    param_grid = {
-                'max_depth':[4],
-    			  'learning_rate':[0.05],
-    			  'silent':[1],
-    			  'gamma':[0.15],
-    			  'lambda':[0.15],
-    			  'subsample':[0.7],
-    			  'colsample_bytree':[0.6]
-                 }
-
-    xgboost_cv = grid_search_xgboost(element = data_info.target_variable,
-                                     data_info = data_info,
-                                     param_grid = param_grid,
-                                     num_boost_round = 3000,
-                                     early_stopping_rounds = 50,
-                                     log_results = True)
+    # param_grid = {
+    #             'max_depth':[4],
+    # 			  'learning_rate':[0.05],
+    # 			  'silent':[1],
+    # 			  'gamma':[0.15],
+    # 			  'lambda':[0.15],
+    # 			  'subsample':[0.7],
+    # 			  'colsample_bytree':[0.6]
+    #              }
+    #
+    # xgboost_cv = grid_search_xgboost(element = data_info.target_variable,
+    #                                  data_info = data_info,
+    #                                  param_grid = param_grid,
+    #                                  num_boost_round = 3000,
+    #                                  early_stopping_rounds = 50,
+    #                                  log_results = True)
 
     # from read_write import read_merged_data
     #
