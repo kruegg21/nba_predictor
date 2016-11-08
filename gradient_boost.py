@@ -80,12 +80,9 @@ def xgboost_preprocessing(df, element, data_info, should_dump = True):
     filtered_df, remaining_df = select_features(df,
                                                 element,
                                                 should_dump = should_dump)
-    print filtered_df
-    raw_input()
 
     untransformed = df[element].values
     print "Y train untransformed is {}".format(untransformed)
-    raw_input()
 
     # Transform dependent variable
     data_info.target_transformation(filtered_df, element)
@@ -94,11 +91,9 @@ def xgboost_preprocessing(df, element, data_info, should_dump = True):
     y_train = filtered_df.pop(element).values
     X_train = filtered_df.values
     print "X train is {}".format(X_train)
-    print X_train
 
     print "Y train transformed is {}".format(y_train)
     print y_train[np.isnan(y_train)]
-    raw_input()
 
     # Create DMatrix
     dtrain = xgboost.DMatrix(X_train,
