@@ -2,6 +2,7 @@ from collections import defaultdict
 from itertools import combinations, product
 from optimal_lineups import get_slate_df
 from helper import find_fd_filenames, timeit
+from multiprocessing import Pool, cpu_count
 import numpy as np
 import pandas as pd
 
@@ -16,7 +17,7 @@ class player_set(object):
         self.games = set(tuple(sorted([player.Team, player.Opp])) for player in self.players)
 
     def get_lineup(self):
-        lineup = [player for player in self.players] + [self.score] + \
+        lineup = [player.Player for player in self.players] + [self.score] + \
                  [self.cost] + [id_ for id_ in self.player_ids]
         return lineup
 
@@ -217,11 +218,25 @@ def pprint(partition_dict):
                 print "\t{}".format(item3)
             print "\n"
 
+def do_shit(position_pair):
+    # Order in more efficient way possible
+    not_position_pair = list(set(['PG', 'SG', 'PF', 'SF']) - set(position_pair))
+    partition_tuples = [(position_pair[0], partition_dict[position_pair[0]]),
+                        (position_pair[1], partition_dict[position_pair[1]]),
+                        (not_position_pair[0], partition_dict[not_position_pair[0]]),
+                        (not_position_pair[1], partition_dict[not_position_pair[1]]),
+                        ('C', partition_dict['C'])]
+
+    # Combine layers
+    lineup_dict = reduce(combine_layers, partition_tuples, None, position_pair, total_salary - min_price)
+    lineup_dict = add_wildcard(lineup_dict, slate_df, total_salary)
+    return lineup_dict
+
 if __name__ == "__main__":
     min_price = 3500
     step_size = 100
     max_price = 10000
-    total_salary = 60000
+    total_salary = 50000
 
     file_names = find_fd_filenames()
     for f in file_names:
@@ -243,24 +258,35 @@ if __name__ == "__main__":
 
         # Position pair represents the two positions we are picking 2 players for
         # using the G/F wildcards
-        lineups = []
-        for position_pair in product(['PG', 'SG'], ['PF', 'SF']):
-            # Order in more efficient way possible
-            not_position_pair = list(set(['PG', 'SG', 'PF', 'SF']) - set(position_pair))
-            partition_tuples = [(position_pair[0], partition_dict[position_pair[0]]),
-                                (position_pair[1], partition_dict[position_pair[1]]),
-                                (not_position_pair[0], partition_dict[not_position_pair[0]]),
-                                (not_position_pair[1], partition_dict[not_position_pair[1]]),
-                                ('C', partition_dict['C'])]
+        position_pairs = product(['PG', 'SG'], ['PF', 'SF'])
+        p = Pool(4)
+        results = p.map(do_shit, position_pairs)
+        # for position_pair in product(['PG', 'SG'], ['PF', 'SF']):
+        #     # Order in more efficient way possible
+        #     not_position_pair = list(set(['PG', 'SG', 'PF', 'SF']) - set(position_pair))
+        #     partition_tuples = [(position_pair[0], partition_dict[position_pair[0]]),
+        #                         (position_pair[1], partition_dict[position_pair[1]]),
+        #                         (not_position_pair[0], partition_dict[not_position_pair[0]]),
+        #                         (not_position_pair[1], partition_dict[not_position_pair[1]]),
+        #                         ('C', partition_dict['C'])]
+        #
+        #     # Combine layers
+        #     lineup_dict = reduce(combine_layers, partition_tuples, None, position_pair, total_salary - min_price)
+        #     lineup_dict = add_wildcard(lineup_dict, slate_df, total_salary)
+        #     return lineup_dict
+        #     for cost, lineup_list in lineup_dict.iteritems():
+        #         for lineup in lineup_list:
+        #             lineups.append(lineup.get_lineup())
 
-            # Combine layers
-            lineups = []
-            lineup_dict = reduce(combine_layers, partition_tuples, None, position_pair, total_salary - min_price)
-            lineup_dict = add_wildcard(lineup_dict, slate_df, total_salary)
-            for cost, lineup_list in lineup_dict.iteritems():
+        lineups = []
+        for result in results:
+            for cost, lineup_list in result.iteritems():
                 for lineup in lineup_list:
                     lineups.append(lineup.get_lineup())
-            lineups_df = pd.DataFrame(lineups, columns = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7',
-                                                          'P8', 'Score', 'Cost', 'ID1', 'ID2', 'ID3',
-                                                          'ID4', 'ID5', 'ID6', 'ID7', 'ID8'])
-            lineups_df.to_csv('whatever.csv')
+
+        # Create lineups DataFrame
+        lineups_df = pd.DataFrame(lineups, columns = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7',
+                                                      'P8', 'Score', 'Cost', 'ID1', 'ID2', 'ID3',
+                                                      'ID4', 'ID5', 'ID6', 'ID7', 'ID8'])
+        lineups_df = lineups_df.sort_values(by = 'Score', ascending = False).iloc[:100,:]
+        lineups_df.to_csv('whatever.csv', index = False)

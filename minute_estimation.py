@@ -27,7 +27,7 @@ def create_minutes_estimation(player_df):
     pred_player_df['GS'] = 1
 
     # Dump to 'minute_estimation_file.csv'
-    pred_player_df.to_csv('minute_estimation_file.csv', index = False)
+    pred_player_df.to_csv('minute_estimation_file1.csv', index = False)
 
 def read_minute_estimation(player_df):
     # Read file

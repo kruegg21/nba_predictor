@@ -162,9 +162,9 @@ def predict(should_scrape = True, should_dump = True, should_build = True,
     if should_build:
         # Read in new and prediction data
         new_player_df = read_new_player_data()
-        player_prediction_df = make_player_prediction_data()
+        player_prediction_df = make_player_prediction_data(data_info)
         new_team_df = read_new_team_data()
-        team_prediction_df = make_team_prediction_data()
+        team_prediction_df = make_team_prediction_data(data_info)
 
         # Remove used data
         new_player_df = remove_used_new_player_rows(player_df, new_player_df)
@@ -238,9 +238,9 @@ def make_prediction(df, data_info = None, use_random_forest = False):
 
     else:
         score, filtered_df = predict_xgboost(df,
-                                   data_info.target_variable,
-                                   data_info = data_info,
-                                   should_dump = True)
+                                             data_info.target_variable,
+                                             data_info = data_info,
+                                             should_dump = True)
         variance = 0
 
     # Create DataFrame with 'Player', 'PlayerID', 'Score', and 'Variance'
@@ -343,7 +343,7 @@ if __name__ == "__main__":
                           start_date = '1999-01-01',
                           end_date = '2016-09-01',
                           minutes_cutoff = 3,
-                          target_variable = 'DraftKingsScore',
+                          target_variable = 'FanDuelScore',
                           target_transformation = power_transform)
 
     # Train
@@ -357,9 +357,9 @@ if __name__ == "__main__":
                  'gamma': 0.1,
                  'lambda': 0.1
              }
-    train(should_scrape = False,
-          should_dump = False,
-          should_build = False,
+    train(should_scrape = True,
+          should_dump = True,
+          should_build = True,
           should_train_linear_models = False,
           data_info = data_info,
           params = params,
@@ -367,7 +367,7 @@ if __name__ == "__main__":
 
     # Grid Search
     # param_grid = {
-    #               'max_depth':[4],
+    #             'max_depth':[4],
     # 			  'learning_rate':[0.05],
     # 			  'silent':[1],
     # 			  'gamma':[0.15],
@@ -394,11 +394,20 @@ if __name__ == "__main__":
     # add_player_position(df, data_info)
 
     # Predict
+    # data_info = cv_method(method = k_folds_cv,
+    #                       splits = 5,
+    #                       start_date = '1999-01-01',
+    #                       end_date = '2017-09-01',
+    #                       minutes_cutoff = 3,
+    #                       target_variable = 'FanDuelScore',
+    #                       target_transformation = power_transform)
+    #
     # predict(should_scrape = False,
     #         should_dump = False,
     #         should_build = True,
     #         data_info = data_info)
-    #
-    # # Pick optimal lineups
-    # optimize_lineups(n_lineups = 500,
-    #                  ratio_cutoff = 0.3)
+
+    # Pick optimal lineups
+    # if data_info.target_variable == 'FanDuelScore':
+    #     optimize_lineups(n_lineups = 500,
+    #                      ratio_cutoff = 0.3)

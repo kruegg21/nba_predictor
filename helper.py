@@ -88,8 +88,11 @@ def unmark_pred(df):
 """
 Translates names from FanDuel format to basketballreference.com format
 """
-def translate_team_names(df):
-    translate(df, fd_to_br_team_translator)
+def translate_team_names(df, site_name):
+    if site_name == 'FanDuel':
+        translate(df, fd_to_br_team_translator)
+    else:
+        translate(df, dk_to_br_team_translator)
 
 def translate_player_names(df):
     translate(df, fd_to_br_player_translator)
@@ -103,7 +106,10 @@ def translate(df, dictionary):
     df.replace(dictionary, inplace = True)
 
 
-
+# DraftKings file functions
+def find_dk_filenames():
+    for root, dirs, files in walk(dk_files_path):
+        pass
 
 # FanDuel file functions
 """
@@ -115,8 +121,8 @@ def find_fd_filenames():
     Input:
         None
     Output:
-        file_list -- list of strings indicating the file path to the FanDuel files
-                 for the most recent day
+        file_list -- list of strings indicating the file path to the
+                     FanDuel files for the most recent day
 
     Seaches the directory specified in 'fd_files_path' for the fd
     file with the latest date associated with it.
@@ -508,7 +514,18 @@ def add_possessions_played(df):
     df['PlayerPossessionsPlayed'] = (df.PlayerMP / (df.TeamMP / 5)) * df.Possessions
 
 def add_fg_percentage(df):
-    df['PlayerFG%'] = (df.FG + 1) / (df.FGA + 1)
+    # Get list of all window for 'FGA' and 'FG'
+    fga_rolling_averages = sorted([x for x in player_rolling_mean_stat_dict \
+                         if stat[-3:] == 'FGA'])
+    fg_rolling_averages = sorted([x for x in player_rolling_mean_stat_dict \
+                           if stat[-2:] == 'FG'])
+
+    # Extract window size from column names
+    for w1, w2 in zip(fg_rolling_averages, fga_rolling_averages):
+        window = ''.join([c for c in s if c.isdigit()])
+
+    # Calculate FG%
+    df['Last' + window + 'PlayerFG%'] = df[w1]/df[w2]
 
 def add_pace(df):
     """

@@ -188,8 +188,8 @@ def optimal_lineup_test(df, column, cut_off, file_name, n_lineups):
 	for i in xrange(minimum_total_salary, slots+1):
 		lineups += final_linups[i]
 
-	# Filter out lineups with more than 4 players on 1 team
-	lineups = [lineup for lineup in lineups if Counter(lineup[2]).most_common(1)[0][1] <= 4]
+	# Filter out lineups with more than 2 players on 1 team
+	lineups = [lineup for lineup in lineups if Counter(lineup[2]).most_common(1)[0][1] <= 2]
 
 	# Sort lineups and pick top 100
 	lineups = sorted(lineups, key = lambda x: x[0], reverse = True)
@@ -204,6 +204,7 @@ def optimal_lineup_test(df, column, cut_off, file_name, n_lineups):
 		teams[i] = best_lineups[i][1]
 	bl = pd.DataFrame(players, columns = ['SmallForward1','SmallForward2','PowerForward1','PowerForward2',
 										  'Center','PointGuard1','PointGuard2','ShootingGuard1','ShootingGuard2'])
+
 	# reorder to PG, SG, SF, PF, C
 	cols = bl.columns.tolist()
 	cols = cols[5:7] + cols[7:] + cols[:5]
