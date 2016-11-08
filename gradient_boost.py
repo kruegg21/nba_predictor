@@ -93,7 +93,6 @@ def xgboost_preprocessing(df, element, data_info, should_dump = True):
     print "X train is {}".format(X_train)
 
     print "Y train transformed is {}".format(y_train)
-    print y_train[np.isnan(y_train)]
 
     # Create DMatrix
     dtrain = xgboost.DMatrix(X_train,

@@ -378,8 +378,8 @@ if __name__ == "__main__":
                 'max_depth':[4],
     			  'learning_rate':[0.05],
     			  'silent':[1],
-    			  'gamma':[0.15],
-    			  'lambda':[0.15],
+    			  'gamma':[0.15, 0.18, 0.20],
+    			  'lambda':[0.15, 0.18, 0.20],
     			  'subsample':[0.7],
     			  'colsample_bytree':[0.6]
                  }
