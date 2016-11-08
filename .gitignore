@@ -12,6 +12,7 @@ Thumbs.db
 #####################
 *.csv
 *.buffer
+*.out
 
 #Executables
 *.pyc
