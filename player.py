@@ -28,11 +28,14 @@ def build_basic_player_data(player_df):
     # Make Position Numeric
     make_position_numeric(player_df)
 
+    # Add total rebounds
+    add_total_rebounds(player_df)
+
+    # Add triple double and double double
+    add_doubles(player_df)
+
     # Add Fantasy score
     add_fantasy_score(player_df)
-
-    # Add field goal percentage
-    add_fg_percentage(player_df)
 
     # Minute adjusted stats
     add_player_per_minute_stats(player_df)
@@ -64,5 +67,8 @@ def build_time_series_player_data(player_df):
 
     # Group by player
     player_df = group_by_player(player_df, split = True)
+
+    # Add field goal percentage
+    add_fg_percentage(player_df)
 
     return player_df

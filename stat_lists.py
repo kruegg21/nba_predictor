@@ -23,7 +23,7 @@ opponent_possession_adjusted_stats_list = opp_stat_list
 player_rolling_mean_stat_dict = \
     dict([('Player' + stat, [5,10,20,23,25,30]) for stat in main_stat_list] + \
     [('Player' + stat + 'PerMinute', [5,10,20,23,25,30]) for stat in main_stat_list_minus_minutes] + \
-    [('PlayerFG%', [15,20,25])])
+    [(stat, [5,10,20,23,25]) for stat in ['FG', 'FGA']])
 
 player_post_merge_rolling_mean_stat_dict = \
     dict([('Player' + stat + 'PerPossession', [5,10,20]) \
@@ -83,6 +83,11 @@ fd_to_br_player_translator = {'Brad Beal': 'Bradley Beal',
 
 fd_to_br_position_translator = {'PG': 'G', 'SF' : 'G-F', 'SG' : 'G'}
 
+df_to_br_team_translator = {'Hou': 'HOU', 'Was': 'WAS', 'GS': 'GSW',
+                            'Mia': 'MIA', 'Det': 'DET', 'Ind': 'IND',
+                            'Cha': 'CHA', 'Chi': 'CHI', 'Uta': 'UTA',
+                            'NO': 'NOP', 'Orl': 'ORL', 'Phi': 'PHI'}
+
 """
 Prediction set columns. These are the columns to select from our prediction file
 to add to full dataset.
@@ -96,6 +101,7 @@ team_prediction_set_columns = ['Team', 'Opp', 'Date', 'Home', 'New', 'Prediction
 Path to FanDuel prediction files
 """
 fd_files_path = 'Data/FanDuelFiles/'
+dk_files_path = 'Data/DraftKingsFiles/'
 
 """
 Minutes estimation file list.

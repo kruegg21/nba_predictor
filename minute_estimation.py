@@ -27,21 +27,28 @@ def create_minutes_estimation(player_df):
     pred_player_df['GS'] = 1
 
     # Dump to 'minute_estimation_file.csv'
-    pred_player_df.to_csv('minute_estimation_file.csv', index = False)
+    pred_player_df.to_csv('minute_estimation_file1.csv', index = False)
 
 def read_minute_estimation(player_df):
     # Read file
     minute_estimation_df = pd.read_csv('minute_estimation_file.csv')
 
     # Put dummies in
-    minute_estimation_df['PlayerMP'] = 30
-    minute_estimation_df['GS'] = 1
+    # minute_estimation_df['PlayerMP'] = 30
+    # minute_estimation_df['GS'] = 1
+
+    print len(minute_estimation_df.GS)
 
     # Select essential rows from minutes estimation file
     minute_estimation_df = minute_estimation_df[['Player', 'PlayerMP', 'GS']]
 
     # Player
     prediction_player_df = player_df[player_df.Prediction == True]
+
+    print len(prediction_player_df)
+    print len(minute_estimation_df)
+    raw_input()
+
     prediction_player_df.drop(['PlayerMP', 'GS'], axis = 1, inplace = True)
     prediction_player_df = prediction_player_df.merge(minute_estimation_df,
                                                       on = ['Player'])

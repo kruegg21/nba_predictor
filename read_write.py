@@ -61,10 +61,15 @@ def read_final_score_data():
 
 def read_fan_duel_file(file_name):
     df = pd.read_csv(file_name)
-    translate_team_names(df)
+    translate_team_names(df, 'FanDuel')
     mark_new(df)
     return df
 
+def read_draft_kings_file(file_name):
+    df = pd.read_csv(file_name)
+    translate_team_names(df, 'DraftKings')
+    mark_new(df)
+    return df
 
 # Abstracted data loading functions
 def read_data(label, backup_label = None):
@@ -158,23 +163,32 @@ def dump_pickled_model(model, model_name):
 
 
 # Read prediction data
-def make_team_prediction_data():
-    return make_prediction_data('team')
+def make_team_prediction_data(data_info):
+    return make_prediction_data('team', data_info)
 
-def make_player_prediction_data():
-    return make_prediction_data('player')
+def make_player_prediction_data(data_info):
+    return make_prediction_data('player', data_info)
 
-def make_prediction_data(label):
-    file_names = find_fd_filenames()
+def make_prediction_data(label, data_info):
+    if data_info.target_variable == 'FanDuelScore':
+        file_names = find_fd_filenames()
 
-    # Read all FanDuel files
-    df = pd.DataFrame()
-    for f in file_names:
-        df = stack_data_frames([df, read_fan_duel_file(f)])
+        # Read all FanDuel files
+        df = pd.DataFrame()
+        for f in file_names:
+            df = stack_data_frames([df, read_fan_duel_file(f)])
 
-    # Find home
-    df['Home'] = np.where(df.Team == df.apply(lambda x: x.Game.split('@')[0], \
-                                                  axis = 1), False, True)
+        # Find home
+        df['Home'] = np.where(df.Team == df.apply(lambda x: x.Game.split('@')[0], \
+                                                      axis = 1), False, True)
+    else:
+        # WRITE THIS FUNCTION
+        file_names = find_df_filenames()
+
+        # WRITE THIS FUNCTION
+        df = pd.DataFrame()
+        for f in file_names:
+            df = stack_data_frames([df, read_df_file(f)])
 
     # Get FanDuel player Id
     get_player_id(df)
