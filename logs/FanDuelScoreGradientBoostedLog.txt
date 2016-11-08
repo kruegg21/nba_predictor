@@ -1767,10 +1767,9 @@ Best Parameters:
 	num_boost_round: 822/3000
 
 Best Score: 7.3971578
-
-
 ----------------------------------------
 Train Set:
+<<<<<<< HEAD
 K-Folds from 1999-01-01 to 2016-09-01 with a minutes cutoff of 3 and power dependent                 variable transform
 Columns Used:
 	BackToBack
@@ -2180,3 +2179,5 @@ Best Parameters:
 Best Score: 60.0461198
 
 
+=======
+>>>>>>> 5caea1872bdda032b2ae3a83c7134acb206c0797
