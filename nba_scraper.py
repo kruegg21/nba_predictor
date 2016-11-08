@@ -10,7 +10,7 @@ from read_write import read_team_data
 
 def scrape():
     most_recent_date = read_team_data().Date.max().strftime('%Y-%m-%d')
-    scrape_new_data(most_recent_date, only_team = False)
+    scrape_new_data(most_recent_date, only_team = True)
 
 def get_page_data(url, feature_names):
 	# Load HTML data from page into pagetext
@@ -115,7 +115,6 @@ def scrape_new_data(most_recent_date, only_team = False):
             df['Date'] = pd.to_datetime(df.Date)
             date = df.Date.min()
             print date
-            print most_recent_date
 
             if (date <= most_recent_date):
             	reached_most_recent_date = True
@@ -173,7 +172,7 @@ def scrape_new_data(most_recent_date, only_team = False):
             "&player=" + \
             "&match=game" + \
             "&lg_id=NBA" + \
-            "&year_min=" + str(season) + \
+            "&year_min=" + '2016' + \
             "&year_max=" + str(season) + \
             "&team_id=" + \
             "&opp_id=" + \
@@ -209,6 +208,7 @@ def scrape_new_data(most_recent_date, only_team = False):
             "&offset=" + str(offset)
 
             df = get_page_data(url, fn)
+            print offset
 
             # Data Cleaning
             df = df[pd.notnull(df.Team)]

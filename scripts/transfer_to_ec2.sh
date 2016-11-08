@@ -6,4 +6,4 @@ SUFFIX=.us-west-2.compute.amazonaws.com
 INSTANCE=ubuntu@ec2-35-160-200-4.us-west-2.compute.amazonaws.com
 DATA=~/Desktop/nba_predictor/data/merged_data.csv
 KEY=~/Downloads/EC2_instance1.pem
-scp -Ci $KEY $DATA $PREFIX$1$SUFFIX:~/Desktop/nba_predictor/data
+scp -rCi $KEY $DATA $PREFIX$1$SUFFIX:~/Desktop/nba_predictor/data

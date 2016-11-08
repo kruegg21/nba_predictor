@@ -455,11 +455,17 @@ def combine_chunks(df1, df2, columns):
 Used to stack data frames on top of another
 """
 @timeit
-def stack_data_frames(frame_list):
-    return pd.concat(frame_list).reset_index(drop = True)
+def stack_data_frames(frame_list, drop_duplicates = False):
+    # Stack frames on top of one another
+    df = pd.concat(frame_list).reset_index(drop = True)
 
+    # Drop duplicate rows
+    if drop_duplicates:
+        n_rows = len(df)
+        df.drop_duplicates(subset = ['Team', 'Date'], inplace = True)
+        print "Number of rows dropped: {}".format(n_rows - len(df))
 
-
+    return df
 
 
 # Feature building functions
@@ -515,17 +521,26 @@ def add_possessions_played(df):
 
 def add_fg_percentage(df):
     # Get list of all window for 'FGA' and 'FG'
-    fga_rolling_averages = sorted([x for x in player_rolling_mean_stat_dict \
-                         if stat[-3:] == 'FGA'])
-    fg_rolling_averages = sorted([x for x in player_rolling_mean_stat_dict \
-                           if stat[-2:] == 'FG'])
+    fga_rolling_averages = sorted([x for x in df.columns \
+                                   if (x[-3:] == 'FGA') and ('Last' in x)])
+    fg_rolling_averages = sorted([x for x in df.columns \
+                                  if (x[-2:] == 'FG') and ('Last' in x)])
 
-    # Extract window size from column names
+    print "FG percentage rolling averages are:"
+    print fga_rolling_averages
+    print fg_rolling_averages
+    raw_input()
+
+    # Iterate through all pairs of 'FGA' and 'FG' rolling averages
     for w1, w2 in zip(fg_rolling_averages, fga_rolling_averages):
-        window = ''.join([c for c in s if c.isdigit()])
+        # Extract window size from column names
+        print w1
+        print w2
+        window = ''.join([c for c in w1 if c.isdigit()])
+        print window
 
-    # Calculate FG%
-    df['Last' + window + 'PlayerFG%'] = df[w1]/df[w2]
+        # Calculate FG%
+        df['Last' + window + 'PlayerFG%'] = df[w1]/df[w2]
 
 def add_pace(df):
     """

@@ -104,9 +104,11 @@ def train(should_scrape = True, should_dump = True, should_build = True,
 
         # Combine new and old data
         player_df = stack_data_frames([player_df,
-                                       new_player_df])
+                                       new_player_df],
+                                       drop_duplicates = False)
         team_df = stack_data_frames([team_df,
-                                     new_team_df])
+                                     new_team_df],
+                                     drop_duplicates = True)
 
 
         # Build features
@@ -127,6 +129,10 @@ def train(should_scrape = True, should_dump = True, should_build = True,
 
     # Dump
     if should_dump:
+        print "Columns in merged data: "
+        for column in merged_df.columns:
+            print column
+
         dump_player_data(player_df)
         dump_team_data(team_df)
         dump_merged_data(merged_df)
@@ -173,10 +179,12 @@ def predict(should_scrape = True, should_dump = True, should_build = True,
         # Append DataFrames on top on one another
         player_df = stack_data_frames([player_df,
                                        new_player_df,
-                                       player_prediction_df])
+                                       player_prediction_df],
+                                       drop_duplicates = False)
         team_df = stack_data_frames([team_df,
                                      new_team_df,
-                                     team_prediction_df])
+                                     team_prediction_df],
+                                     drop_duplicates = True)
 
         player_df = build_basic_player_data(player_df)
         team_df = build_basic_team_data(team_df)
@@ -347,41 +355,41 @@ if __name__ == "__main__":
                           target_transformation = power_transform)
 
     # Train
-    num_boost_round = 739
-    params = {
-                 'colsample_bytree': 0.6,
-                 'silent': 0,
-                 'learning_rate': 0.05,
-                 'subsample': 0.6,
-                 'max_depth': 4,
-                 'gamma': 0.1,
-                 'lambda': 0.1
-             }
-    train(should_scrape = True,
-          should_dump = True,
-          should_build = True,
-          should_train_linear_models = False,
-          data_info = data_info,
-          params = params,
-          num_boost_round = num_boost_round)
+    # num_boost_round = 739
+    # params = {
+    #              'colsample_bytree': 0.6,
+    #              'silent': 0,
+    #              'learning_rate': 0.05,
+    #              'subsample': 0.6,
+    #              'max_depth': 4,
+    #              'gamma': 0.1,
+    #              'lambda': 0.1
+    #          }
+    # train(should_scrape = False,
+    #       should_dump = True,
+    #       should_build = True,
+    #       should_train_linear_models = False,
+    #       data_info = data_info,
+    #       params = params,
+    #       num_boost_round = num_boost_round)
 
     # Grid Search
-    # param_grid = {
-    #             'max_depth':[4],
-    # 			  'learning_rate':[0.05],
-    # 			  'silent':[1],
-    # 			  'gamma':[0.15],
-    # 			  'lambda':[0.15],
-    # 			  'subsample':[0.7],
-    # 			  'colsample_bytree':[0.6]
-    #              }
-    #
-    # xgboost_cv = grid_search_xgboost(element = data_info.target_variable,
-    #                                  data_info = data_info,
-    #                                  param_grid = param_grid,
-    #                                  num_boost_round = 3000,
-    #                                  early_stopping_rounds = 50,
-    #                                  log_results = True)
+    param_grid = {
+                'max_depth':[4],
+    			  'learning_rate':[0.05],
+    			  'silent':[1],
+    			  'gamma':[0.15],
+    			  'lambda':[0.15],
+    			  'subsample':[0.7],
+    			  'colsample_bytree':[0.6]
+                 }
+
+    xgboost_cv = grid_search_xgboost(element = data_info.target_variable,
+                                     data_info = data_info,
+                                     param_grid = param_grid,
+                                     num_boost_round = 3000,
+                                     early_stopping_rounds = 50,
+                                     log_results = True)
 
     # from read_write import read_merged_data
     #
